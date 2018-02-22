@@ -107,23 +107,16 @@ export default {
       }
       console.log("calling URL ", url);
 
-      // var params = {
-      //   method: 'GET'
-      // }
-      // fetch(url, params).then(response => {
-      //   if (response.ok) {
-      //     return response.json();
-      //   }
-      //   throw new Error('Network response was not ok.');
-      // }).then(o => {
-      //   console.log("o", o)
-      // })
-
       getJSON(url).then(o => { // use fetch instead of getJSON
         console.log(o);
-        this.pdf_paths.fact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.fact)[1];
-        if (o.refact) this.pdf_paths.refact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.refact)[1];
-        this.loading = false;
+        if (o.error) {
+          console.log(o);
+          this.loading = false;
+        } else {
+          this.pdf_paths.fact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.fact)[1];
+          if (o.refact) this.pdf_paths.refact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.refact)[1];
+          this.loading = false;
+        }
       }).catch(e => {
         console.log(e);
         this.loading = false;
