@@ -8,8 +8,8 @@
     <ul>
       <li>PAX : {{dossier.pax}}</li>
       <li>DATE : {{prettyDate(dossier.date)}}</li>
-      <li>AGENCY : {{agency.name}}</li>
-      <li>AGENCY ADDRESS : {{agency.street}} {{agency.postalcode}} {{agency.city}}</li>
+      <li v-if="dossier.agency">AGENCY : {{dossier.agency.name}}</li>
+      <li v-if="dossier.agency">AGENCY ADDRESS : {{dossier.agency.street}} {{dossier.agency.postalcode}} {{dossier.agency.city}}</li>
     </ul>
 
     <form action="#">
@@ -70,7 +70,6 @@ export default {
         refact: ''
       },
       loading: false,
-      agency: (this.dossier || {}),
       pax_modified: false,
       annee_emission: "2018", // TODO
       date_emission: ""
