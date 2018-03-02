@@ -1,3 +1,6 @@
 phantomjs/*
 node_modules/*
 public/downloads/*
+
+**/_credentials/*
+services/sync_calendar/tmp/*
