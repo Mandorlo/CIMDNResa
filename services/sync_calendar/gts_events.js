@@ -49,6 +49,8 @@ let EVENT_LABELS = {
   'Dîner': /^CAF303$/,
   'Pause café': /^CAF304$/,
   'Ptidéj': /^CAF301$/,
+  'Location Caféteria': /^CAF002$/,
+  'Location de salle': /^AUD002$/,
   'Marie dans le monde': /^MDM/,
   'Location salle': /^AUD2$/,
   'Visite/divers': /^MDN1$/,
