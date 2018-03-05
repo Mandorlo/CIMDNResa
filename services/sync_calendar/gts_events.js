@@ -18,7 +18,7 @@ let QUERY_FUTURE_RESA = ` SELECT
                           LEFT JOIN ReservationEspace ON Res_numresa = Rs_coderesa
                           WHERE
                               (Rs_codeetat = 1 OR Rs_codeetat = 2)
-                              AND Rs_datedebut > '@today'
+                              AND Rs_datedebut >= '@today'
                           ORDER BY Rs_datedebut`
 
 let MODEL_FUTURE_RESA = {
@@ -43,10 +43,11 @@ let EVENT_LABELS = {
   'Fouilles': /^FOU/,
   'Show': /^SMM/,
   'Messe': /^CHA102$/,
+  'Chapelle visite': /^CHA101$/,
   'Chapelle prière': /^CHA103$/,
   'Terrasses/jardins': /^JAR/,
-  'Déjeuner': /^CAF302$/,
-  'Dîner': /^CAF303$/,
+  'Déjeuner': (ev) => (/^CAF30[23]$/.test(ev.espace+ev.theme) && (parseInt(ev.heure.debut.substr(0,2)) <= 16)), // /^CAF302$/,
+  'Dîner': /^CAF30[23]$/, // CAF303
   'Pause café': /^CAF304$/,
   'Ptidéj': /^CAF301$/,
   'Location Caféteria': /^CAF002$/,
