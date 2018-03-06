@@ -58,7 +58,9 @@ export default {
   },
   mounted: function() {
     getJSON('/invoices/tbd').then(invoices => {
-      this.fact_tbd = invoices;
+      this.fact_tbd = invoices.sort((r1,r2) => { // on trie par date
+        if (r1.date < r2.date) return 1; else return -1
+      });
       console.log("Got invoices " + this.fact_tbd.length + " to be emitted ! Grazie Signore !")
     }).catch(e => {
       console.log("Unable to get invoices TBD :(", e)

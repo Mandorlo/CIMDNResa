@@ -180,5 +180,6 @@ function collapse(list, f_filter, f_merge) {
 }
 
 module.exports = {
+  collapse: collapse,
   getFutureEvents: getFutureEvents
 }

@@ -1,3 +1,4 @@
+<!-- This component corresponds to one single line of the table in the invoices page -->
 <template>
 <tr class="root_invoice_el">
   <td class="mdl-data-table__cell--non-numeric"><i class="fa fa-users mdl-list__item-avatar resa_icon"></i></td>
