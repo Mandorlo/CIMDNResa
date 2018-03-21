@@ -72,6 +72,7 @@ router.get('/gen/:dossier', (req, res, next) => {
   var pax = req.query['pax'];
   var annee = req.query['annee'];
   var date_emission = req.query['date_emission'];
+  var bank_account = req.query['bank_account'];
 
   var opt = {
     voucher_num: voucher_num,
@@ -82,6 +83,8 @@ router.get('/gen/:dossier', (req, res, next) => {
   }
   if (pax) opt.pax = pax;
   if (date_emission) opt.date_emission = date_emission;
+  if (bank_account) opt.bank_account = bank_account;
+  console.log("bank_account : ", bank_account)
 
   invoices.genInvoice(dossier_num, opt)
     .then(pdf_paths => res.send(pdf_paths)) // an object with attributes 'fact' and 'refact' (if refac is needed)

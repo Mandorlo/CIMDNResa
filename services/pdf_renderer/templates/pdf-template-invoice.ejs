@@ -207,11 +207,18 @@
     </tr>
   </table>
 
-  <div class="info_bottom1">
-    <b>Paiement à réception de la facture par Cash/Chèque/Virement bancaire.</b><br><span class="style_en">Payment upon receipt of invoice by Cash/Check/Wire transfer.</span>
-    <br><span class="style_en">Bank:</span> <b>Mercantile 17 ●</b> <span class="style_en">Account:</span> <b> Chemin Neuf FratNaz ●</b> <span class="style_en">Branch:</span> <b> Nazareth 639 ●</b> <span class="style_en">Compte:</span> <b> 61119190 BARDILIT ● IBAN : IL27
-    0176 3900 0006 1119 190</b>
-  </div>
+  <% if (bank_account == 'paxbank') { %>
+    <div class="info_bottom1">
+      <b>Paiement à réception de la facture par Cash/Chèque/Virement bancaire.</b><br><span class="style_en">Payment upon receipt of invoice by Cash/Check/Wire transfer.</span>
+      <br><span class="style_en">Bank:</span> <b>Pax-Bank ●</b> <span class="style_en">Compte:</span> <b> 0058088030 ● IBAN : DE84 3706 0193 0058 0880 30</b>
+    </div>
+  <% } else { %>
+    <div class="info_bottom1">
+      <b><% bank_account %> Paiement à réception de la facture par Cash/Chèque/Virement bancaire.</b><br><span class="style_en">Payment upon receipt of invoice by Cash/Check/Wire transfer.</span>
+      <br><span class="style_en">Bank:</span> <b>Mercantile 17 ●</b> <span class="style_en">Account:</span> <b> Chemin Neuf FratNaz ●</b> <span class="style_en">Branch:</span> <b> Nazareth 639 ●</b> <span class="style_en">Compte:</span> <b> 61119190 BARDILIT ● IBAN : IL27
+      0176 3900 0006 1119 190</b>
+    </div>
+  <% } %>
 
   <div class="info_bottom1">
     Pour toute demande d'informations complémentaires, n'hésitez pas à nous contacter. Nous espérons que vous apprécierez notre centre et que vous pourrez nous aider à l’entretenir et à le développer. Notre communauté vit essentiellement de la générosité

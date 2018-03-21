@@ -23,3 +23,33 @@ function ajax(url) {
     xhttp.send();
   })
 }
+
+function niceMoneyNumber(nb) {
+  var n = Math.abs(nb);
+  var partieEntiere = parseInt(n);
+  var partieDecimale = Math.round((n - partieEntiere) * 100);
+  if (partieDecimale < 10) partieDecimale = "0" + partieDecimale;
+
+  var left = parseInt(partieEntiere / 1000);
+  var mem_partent = partieEntiere;
+  var s = "";
+  var mem = left;
+  if (left == 0) s = partieEntiere.toString();
+  while (left > 0) {
+    s = threePad(mem_partent - left * 1000) + " " + s;
+    mem_partent = parseInt(mem_partent / 1000);
+    mem = left;
+    left = parseInt(left / 1000)
+  }
+  if (partieEntiere > 999) s = mem + " " + s;
+  if (s == "") s = "0";
+  s = s.trim() + "." + partieDecimale;
+  if (nb < 0) s = '-' + s;
+  return s;
+}
+
+function threePad(i) {
+  var s = i.toString();
+  while (s.length < 3) s = '0' + s;
+  return s
+}

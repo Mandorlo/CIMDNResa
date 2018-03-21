@@ -27,6 +27,7 @@ const PARAM = {
 }
 
 function genInvoice(dossiernum_or_obj, opt = null) {
+  console.log('GENINVOICE : ', opt.bank_account)
   if (!opt) opt = {};
   if (!opt.debug) opt.debug = false;
   if (!opt.voucher_num) opt.voucher_num = null;
@@ -35,6 +36,7 @@ function genInvoice(dossiernum_or_obj, opt = null) {
   if (!opt.responsable) opt.responsable = null;
   if (!opt.annee) opt.annee = null; // annee d'émission de la facture
   if (!opt.acompte) opt.acompte = 0; // doit être un int ou decimal !
+  if (!opt.bank_account) opt.bank_account = 'mercantile'; // 'mercantile' || 'pax-bank'
   if (!opt.pdf_dir_save) opt.pdf_dir_save = path.join(__dirname, "../public/downloads/"); // le dossier où sotcker le pdf
   if (opt.date_emission) opt.date_emission = moment(opt.date_emission, "YYYYMMDD").format("DD-MMM-YYYY");
 
@@ -149,7 +151,8 @@ function parseDossierObj(dossier) {
     invoices: parseInvoices(dossier),
     prix_avant_acompte: computePrixAvantAcompte(dossier),
     acompte: int2MoneyString(dossier.acompte),
-    prix_final: computePrixFinal(dossier)
+    prix_final: computePrixFinal(dossier),
+    bank_account: dossier.bank_account
   }
 }
 
@@ -295,6 +298,7 @@ function addInfoToDossier(dossier, opt) {
   if (opt.fact_num) console.log("Attention, le numéro de facture a été forcé à " + opt.fact_num + " au lieu de " + fact_num);
   if (opt.refact_num) new_dossier['refact_num'] = opt.refact_num;
   if (opt.date_emission) new_dossier['date_emission'] = opt.date_emission;
+  if (opt.bank_account) new_dossier['bank_account'] = opt.bank_account;
   new_dossier['responsable'] = (opt.responsable || dossier.responsable.prenom + ' ' + dossier.responsable.nom);
   new_dossier['voucher_num'] = opt.voucher_num;
   new_dossier['acompte'] = (opt.acompte || 0);

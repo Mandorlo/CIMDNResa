@@ -2,13 +2,14 @@ const dbapi = require('../db.js')
 
 const FLEX = {
   y: ['SUM(Rs_effectif)', 'SUM(Rp_montant)', 'COUNT(Rs_coderesa)'],
-  x: ['SUBSTRING(Rs_datedebut,1,4)', 'Rs_nomliv'],
+  x: ['SUBSTRING(Rs_datedebut,1,4)', 'Rs_nomliv', 'SUBSTRING(Rs_datedebut,5,2)'],
   corresp: {
     'pax': 'SUM(Rs_effectif)',
     'ca': 'SUM(Rp_montant)',
     'resa': 'COUNT(Rs_coderesa)',
     'year': 'SUBSTRING(Rs_datedebut,1,4)',
-    'agency': 'Rs_nomliv'
+    'agency': 'Rs_nomliv',
+    'mois': 'SUBSTRING(Rs_datedebut,5,2)'
   }
 }
 
@@ -20,20 +21,20 @@ const QUERIES = {
                             WHERE
                               (Rs_codeetat = 3 OR Rs_codeetat = 7)
                             GROUP BY @x`,
-  freq_per_agency:          `SELECT
-                              SUM(Rs_effectif) AS Pax, Rs_nomliv
-                            FROM Reservation
-                            WHERE
-                              (Rs_codeetat = 3 OR Rs_codeetat = 7)
-                            GROUP BY Rs_nomliv
-                            ORDER BY Rs_nomliv`,
-  freq_per_year:            `SELECT
-                              SUM(Rs_effectif) AS Pax, SUBSTRING(Rs_datedebut,1,4) AS Year
-                            FROM Reservation
-                            WHERE
-                              (Rs_codeetat = 3 OR Rs_codeetat = 7)
-                            GROUP BY SUBSTRING(Rs_datedebut,1,4)
-                            ORDER BY SUBSTRING(Rs_datedebut,1,4)`,
+  // freq_per_agency:          `SELECT
+  //                             SUM(Rs_effectif) AS Pax, Rs_nomliv
+  //                           FROM Reservation
+  //                           WHERE
+  //                             (Rs_codeetat = 3 OR Rs_codeetat = 7)
+  //                           GROUP BY Rs_nomliv
+  //                           ORDER BY Rs_nomliv`,
+  // freq_per_year:            `SELECT
+  //                             SUM(Rs_effectif) AS Pax, SUBSTRING(Rs_datedebut,1,4) AS Year
+  //                           FROM Reservation
+  //                           WHERE
+  //                             (Rs_codeetat = 3 OR Rs_codeetat = 7)
+  //                           GROUP BY SUBSTRING(Rs_datedebut,1,4)
+  //                           ORDER BY SUBSTRING(Rs_datedebut,1,4)`,
   freq_per_agency_per_year: `SELECT
                               SUM(Rs_effectif) AS Pax, SUBSTRING(Rs_datedebut,1,4) AS Year, Rs_nomliv
                             FROM Reservation
@@ -48,14 +49,14 @@ const MODELS = {
     'x': 'x',
     'y': 'y'
   },
-  freq_per_agency : {
-    'pax': 'Pax',
-    'agency': 'Rs_nomliv'
-  },
-  freq_per_year : {
-    'pax': 'Pax',
-    'year': 'Year'
-  },
+  // freq_per_agency : {
+  //   'pax': 'Pax',
+  //   'agency': 'Rs_nomliv'
+  // },
+  // freq_per_year : {
+  //   'pax': 'Pax',
+  //   'year': 'Year'
+  // },
   freq_per_agency_per_year: {
     'pax': 'Pax',
     'year': 'Year',

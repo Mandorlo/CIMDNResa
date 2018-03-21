@@ -25,15 +25,22 @@
       </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="annee_emission" pattern="[0-9]*(\.[0-9]+)?" name="dossier_pax" v-model="annee_emission">
+        <input class="mdl-textfield__input" type="text" id="annee_emission" pattern="[0-9]*(\.[0-9]+)?" name="annee_emission" v-model="annee_emission">
         <label class="mdl-textfield__label" for="annee_emission">Année d'émission</label>
         <span class="mdl-textfield__error">Input is not a valid year!</span>
       </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="date_emission" pattern="[0-9]*(\.[0-9]+)?" name="dossier_pax" v-model="date_emission">
+        <input class="mdl-textfield__input" type="text" id="date_emission" pattern="[0-9]*(\.[0-9]+)?" name="date_emission" v-model="date_emission">
         <label class="mdl-textfield__label" for="date_emission">Date d'émission au format YYYYMMDD</label>
         <span class="mdl-textfield__error">Input is not a valid YYYYMMDD date!</span>
+      </div>
+
+      <div class="mdl-textfield mdl-js-textfield getmdl-select">
+        <select v-model="bank_account">
+          <option value="mercantile">Mercantile</option>
+          <option value="paxbank">Pax-Bank</option>
+        </select>
       </div>
     </form>
 
@@ -72,7 +79,8 @@ export default {
       loading: false,
       pax_modified: false,
       annee_emission: "2018", // TODO
-      date_emission: ""
+      date_emission: "",
+      bank_account: 'mercantile'
     }
   },
   methods: {
@@ -103,6 +111,10 @@ export default {
       if (this.pax_modified) {
         console.log('pax has been modified for dossier ' + this.dossier.id, this.dossier.pax);
         url = url + args + "pax=" + this.dossier.pax;
+      }
+      if (this.bank_account) {
+        console.log('bank_account has been modified for dossier ' + this.dossier.id, this.dossier.bank_account);
+        url = url + args + "bank_account=" + this.bank_account;
       }
       console.log("calling URL ", url);
 

@@ -11,7 +11,9 @@
 </template>
 
 <style>
-
+.root_flexbarchart {
+  padding: 10px
+}
 </style>
 
 <script>
@@ -22,12 +24,15 @@ export default {
     return {
       xlabel: 'year',
       ylabel: 'pax',
-      x_choices: ['year', 'agency'],
+      x_choices: ['year', 'mois', 'agency'],
       y_choices: ['pax', 'resa', 'ca'],
       title_choices: {
         'pax': '# of pax',
         'resa': '# of reservations',
         'ca': 'chiffre d\'affaire'
+      },
+      suffixes: {
+        'ca': ' ₪'
       },
       myChart: null
     }
@@ -56,7 +61,7 @@ export default {
       if (this.$refs && this.$refs.myChart) {
         let url = `/stats/query/flex/${this.xlabel}/${this.ylabel}`
         getJSON(url).then(mystats => {
-          if (this.xlabel != 'year') {
+          if (this.xlabel != 'year' && this.xlabel != 'mois') {
             mystats = mystats.sort((a, b) => {
               if (a.y < b.y) return 1;
               else return -1
@@ -113,14 +118,39 @@ export default {
         },
         options: {
           scales: {
+            xAxes: [{
+              ticks: {
+                callback: this.shortenLabel
+              }
+            }],
             yAxes: [{
               ticks: {
                 beginAtZero: true
               }
             }]
-          }
+          },
+          tooltips: {
+            enabled: true,
+            mode: 'label',
+            callbacks: {
+              title: function(tooltipItems, data) {
+                var idx = tooltipItems[0].index
+                return data.labels[idx]
+              },
+              label: (tooltipItems, data) => {
+                if (this.ylabel != 'ca') return tooltipItems.yLabel;
+                let s = niceMoneyNumber(tooltipItems.yLabel) + (this.suffixes[this.ylabel] || '')
+                if (this.suffixes[this.ylabel]) s += '  ' + niceMoneyNumber(parseInt(tooltipItems.yLabel / 4)) + ' €'
+                return s
+              }
+            }
+          },
         }
       });
+    },
+    shortenLabel(lab) {
+      if (lab == 'COMMUNAUTE DU CHEMIN NEUF') return 'CCN';
+      else return lab.replace(/(AGENCE|TOURS?|\/)/gi, '').substr(0, 7).trim()
     }
   }
 }
