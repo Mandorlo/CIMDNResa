@@ -12,3 +12,11 @@ This is a web interface to simplify management of the reservations at the Centre
 # Useful links
 
 * Schema of the Vue components lifecycle : https://alligator.io/vuejs/component-lifecycle/
+
+# To add new field in invoice Modal form
+
+1. In ModalInvoice.vue,
+  * add the new field and put a v-model="myField"
+  * add myField in the tobesent object in the data() of the vue script
+2. In emit_invoice.js, in function parseDossierObj, add myField to the returned object
+3. Modify the EJS invoice template to take myField into account

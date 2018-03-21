@@ -205,6 +205,13 @@
       <td></td>
       <td class="right"><b><%= prix_final %> &#8362;</b></td>
     </tr>
+    <% if (amount_currency > 0 && other_currency != '') { %>
+      <tr class="prices">
+        <td colspan="2" class="right"><b>Reste à payer en <%= other_currency %> <span class="style_en">Remaining balance</span></b></td>
+        <td></td>
+        <td class="right"><b><%= amount_currency %> <%= other_currency %></b></td>
+      </tr>
+    <% } %>
   </table>
 
   <% if (bank_account == 'paxbank') { %>

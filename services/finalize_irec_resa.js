@@ -1,3 +1,4 @@
+// ================= This module is not used yet ! ===================
 /*
  * This module will update an IREC reservation to finalize and close it :
  * INPUT : facture num + voucher + refac si besoin

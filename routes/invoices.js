@@ -66,30 +66,18 @@ router.get('/:type', (req, res, next) => {
 router.get('/gen/:dossier', (req, res, next) => {
 
   var dossier_num = req.params.dossier;
-  var voucher_num = req.query['voucher_num'];
-  var acompte = parseFloat(req.query['acompte']);
-  var responsable = req.query['responsable'];
-  var pax = req.query['pax'];
-  var annee = req.query['annee'];
-  var date_emission = req.query['date_emission'];
-  var bank_account = req.query['bank_account'];
 
-  var opt = {
-    voucher_num: voucher_num,
-    acompte: acompte,
-    responsable: responsable,
-    pdf_dir_save: path.join(__dirname, '../public/downloads'),
-    annee: annee,
+  let opt = {
+    pdf_dir_save: path.join(__dirname, '../public/downloads')
   }
-  if (pax) opt.pax = pax;
-  if (date_emission) opt.date_emission = date_emission;
-  if (bank_account) opt.bank_account = bank_account;
-  console.log("bank_account : ", bank_account)
+  Object.getOwnPropertyNames(req.query).forEach(k => {
+    opt[k] = req.query[k];
+  })
 
   invoices.genInvoice(dossier_num, opt)
     .then(pdf_paths => res.send(pdf_paths)) // an object with attributes 'fact' and 'refact' (if refac is needed)
     .catch(e => res.send({
-      error : true,
+      error: true,
       details: e
     }))
 })

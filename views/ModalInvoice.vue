@@ -10,34 +10,58 @@
       <li>DATE : {{prettyDate(dossier.date)}}</li>
       <li v-if="dossier.agency">AGENCY : {{dossier.agency.name}}</li>
       <li v-if="dossier.agency">AGENCY ADDRESS : {{dossier.agency.street}} {{dossier.agency.postalcode}} {{dossier.agency.city}}</li>
+      <li>TOTAL : {{total_price}} &#8362;</li>
     </ul>
 
     <form action="#">
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="voucher_num" name="voucher_num" v-model="voucher_num">
+        <input class="mdl-textfield__input" type="text" id="voucher_num" name="voucher_num" v-model="tobesent.voucher_num">
         <label class="mdl-textfield__label" for="voucher_num">Voucher N°</label>
       </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="dossier_pax" pattern="[0-9]*(\.[0-9]+)?" name="dossier_pax" v-model="dossier.pax" @change="paxModified()">
+        <input class="mdl-textfield__input" type="number" id="dossier_pax" name="dossier_pax" v-model="dossier.pax" @change="paxModified()">
         <label class="mdl-textfield__label" for="dossier_pax">PAX</label>
         <span class="mdl-textfield__error">Input is not a number!</span>
       </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="annee_emission" pattern="[0-9]*(\.[0-9]+)?" name="annee_emission" v-model="annee_emission">
+        <input class="mdl-textfield__input" type="number" step="0.01"  id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency">
+        <label class="mdl-textfield__label" for="amount_currency">Montant en devise</label>
+        <span class="mdl-textfield__error">Input is not a number!</span>
+      </div>
+      <select class="currency" v-model="tobesent.other_currency">
+        <option value=""></option>
+        <option value="€">€</option>
+        <option value="$">$</option>
+      </select>
+
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" id="annee_emission" pattern="[0-9]{4}" name="annee_emission" v-model="tobesent.annee_emission">
         <label class="mdl-textfield__label" for="annee_emission">Année d'émission</label>
         <span class="mdl-textfield__error">Input is not a valid year!</span>
       </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="date_emission" pattern="[0-9]*(\.[0-9]+)?" name="date_emission" v-model="date_emission">
+        <input class="mdl-textfield__input" type="text" id="date_emission" pattern="[0-9]{8}" name="date_emission" v-model="tobesent.date_emission">
         <label class="mdl-textfield__label" for="date_emission">Date d'émission au format YYYYMMDD</label>
         <span class="mdl-textfield__error">Input is not a valid YYYYMMDD date!</span>
       </div>
 
-      <div class="mdl-textfield mdl-js-textfield getmdl-select">
-        <select v-model="bank_account">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" id="fact_num" pattern="F\s[0-9]+" name="fact_num" v-model="tobesent.fact_num">
+        <label class="mdl-textfield__label" for="fact_num">Forcer le numéro de facture</label>
+        <span class="mdl-textfield__error">Input is not a valid invoice num (e.g. "F 18052")</span>
+      </div>
+
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" id="refact_num" pattern="F\s[0-9]+" name="refact_num" v-model="tobesent.refact_num">
+        <label class="mdl-textfield__label" for="refact_num">Forcer le numéro de refacturation</label>
+        <span class="mdl-textfield__error">Input is not a valid invoice num (e.g. "F 18052")</span>
+      </div>
+
+      <div class="container_field">
+        <select v-model="tobesent.bank_account">
           <option value="mercantile">Mercantile</option>
           <option value="paxbank">Pax-Bank</option>
         </select>
@@ -71,16 +95,34 @@ export default {
   data() {
     return {
       dossier: this.dossier,
-      voucher_num: "",
       pdf_paths: {
         fact: '',
         refact: ''
       },
       loading: false,
       pax_modified: false,
-      annee_emission: "2018", // TODO
-      date_emission: "",
-      bank_account: 'mercantile'
+      tobesent: {
+        voucher_num: "",
+        annee_emission: "2018",
+        date_emission: "",
+        bank_account: 'mercantile',
+        fact_num: '',
+        refact_num: '',
+        pax: null,
+        amount_currency: 0.0,
+        other_currency: ''
+      }
+    }
+  },
+  computed: {
+    total_price() {
+      let total = 0
+      if (this.dossier && this.dossier.invoice && this.dossier.invoice.length) {
+        this.dossier.invoice.forEach(i => {
+          total += i.price * 100
+        })
+      }
+      return Math.round(total / 100., 2)
     }
   },
   methods: {
@@ -90,32 +132,22 @@ export default {
     paxModified() {
       console.log("pax modified !")
       this.pax_modified = true;
+      this.tobesent.pax = this.dossier.pax;
     },
     prettyDate(s) {
       return s //moment(s, 'YYYYMMDD').format('DDDD D MMMM YYYY')
     },
     genFacture() {
-      console.log("voucher_num", this.voucher_num);
       this.loading = true;
-      var url = '/invoices/gen/' + this.dossier.id + "?annee=" + this.annee_emission;
-      var args = "&";
-      if (this.voucher_num) {
-        url = url + args + "voucher_num=" + this.voucher_num;
-        args = "&"
-      }
-      if (this.date_emission) {
-        console.log('date émission facture has been modified for dossier ' + this.dossier.id, this.date_emission);
-        url = url + args + "date_emission=" + this.date_emission;
-        args = "&"
-      }
-      if (this.pax_modified) {
-        console.log('pax has been modified for dossier ' + this.dossier.id, this.dossier.pax);
-        url = url + args + "pax=" + this.dossier.pax;
-      }
-      if (this.bank_account) {
-        console.log('bank_account has been modified for dossier ' + this.dossier.id, this.dossier.bank_account);
-        url = url + args + "bank_account=" + this.bank_account;
-      }
+      let url = '/invoices/gen/' + this.dossier.id;
+      let args = "?";
+      Object.getOwnPropertyNames(this.tobesent).forEach(k => {
+        if (this.tobesent[k]) {
+          url = url + args + k + "=" + this.tobesent[k];
+          args = "&"
+        }
+      })
+      url = url.substr(0, url.length - 1)
       console.log("calling URL ", url);
 
       getJSON(url).then(o => { // use fetch instead of getJSON

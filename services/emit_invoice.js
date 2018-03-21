@@ -23,31 +23,39 @@ const PARAM = {
     "CAFPACK1": 30, // au lieu de 35 NIS
     "CAFPACK2": 40, // au lieu de 43 NIS
     "CAFPACK3": 50 // au lieu de 55 NIS
-  }
+  },
+  re_fact_num: /F\s[0-9]+/g // l'expression régulière des factures
 }
 
-function genInvoice(dossiernum_or_obj, opt = null) {
-  console.log('GENINVOICE : ', opt.bank_account)
-  if (!opt) opt = {};
-  if (!opt.debug) opt.debug = false;
-  if (!opt.voucher_num) opt.voucher_num = null;
-  if (!opt.fact_num) opt.fact_num = null;
-  if (!opt.refact_num) opt.refact_num = null;
-  if (!opt.responsable) opt.responsable = null;
-  if (!opt.annee) opt.annee = null; // annee d'émission de la facture
-  if (!opt.acompte) opt.acompte = 0; // doit être un int ou decimal !
-  if (!opt.bank_account) opt.bank_account = 'mercantile'; // 'mercantile' || 'pax-bank'
-  if (!opt.pdf_dir_save) opt.pdf_dir_save = path.join(__dirname, "../public/downloads/"); // le dossier où sotcker le pdf
-  if (opt.date_emission) opt.date_emission = moment(opt.date_emission, "YYYYMMDD").format("DD-MMM-YYYY");
+function genInvoice(dossiernum_or_obj, opt = {}) {
+  let myopt = {
+    debug: false,
+    voucher_num: null,
+    fact_num: null,
+    refact_num: null,
+    responsable: null,
+    annee: null, // annee d'émission de la facture
+    acompte: 0, // doit être un int ou decimal !
+    bank_account: 'mercantile', // 'mercantile' || 'pax-bank'
+    pdf_dir_save: path.join(__dirname, "../public/downloads/"), // le dossier où sotcker le pdf
+  }
+  Object.assign(myopt, opt)
+  if (myopt.date_emission) myopt.date_emission = moment(myopt.date_emission, "YYYYMMDD").format("DD-MMM-YYYY");
 
   return new Promise((resolve, reject) => {
     let whenDossierReceived = getDossierObj(dossiernum_or_obj);
-    let whenFactNumReceived = nextFactNum([default_frat_dir, default_cimdn_dir], opt.annee);
+    let whenFactNumReceived;
+    if (!PARAM.re_fact_num.test(myopt.fact_num) || !PARAM.re_fact_num.test(myopt.refact_num)) {
+      whenFactNumReceived = nextFactNum([default_frat_dir, default_cimdn_dir], myopt.annee);
+    } else {
+      console.log("DEBUG2")
+      whenFactNumReceived = Promise.resolve([myopt.fact_num, myopt.refact_num])
+    }
 
     Promise.all([whenDossierReceived, whenFactNumReceived])
 
       .then(res_list => {
-        if (opt.debug === true) console.log("GTS dossier = ", JSON.stringify(dossier, null, '  '));
+        if (myopt.debug === true) console.log("GTS dossier = ", JSON.stringify(dossier, null, '  '));
         return res_list
       })
 
@@ -57,7 +65,12 @@ function genInvoice(dossiernum_or_obj, opt = null) {
 
         dossier_raw['fact_num'] = fact_num_list[0]; // num facture normale (frat)
         dossier_raw['refact_num'] = fact_num_list[1]; // num refact
-        var dossier = addInfoToDossier(dossier_raw, opt);
+        try {
+          var dossier = addInfoToDossier(dossier_raw, myopt);
+        } catch(e) {
+          reject(e)
+          return
+        }
 
         let fact_promises = []; // contiendra la ou les 2 promise de génération pdf des factures
 
@@ -66,17 +79,17 @@ function genInvoice(dossiernum_or_obj, opt = null) {
         // on parse le dossier pour être utilisable par le template ejs (qui sera transformé en pdf)
         try {
           var dossier_ready = parseDossierObj(dossier);
-          if (opt.debug === true) console.log("Dossier parsed : ", dossier_ready)
+          if (myopt.debug === true) console.log("Dossier parsed : ", dossier_ready)
         } catch (e) {
           reject(e)
         }
 
         // on génère le nom du fichier pdf de facture
         let pdf_names = genPDFInvoiceNames(dossier);
-        if (opt.debug === true) console.log("PDF filenames = ", pdf_names);
+        if (myopt.debug === true) console.log("PDF filenames = ", pdf_names);
 
         // on génère le PDF facture
-        let p_frat = ejs2pdf(fact_template, path.join(opt.pdf_dir_save, pdf_names.fact), dossier_ready);
+        let p_frat = ejs2pdf(fact_template, path.join(myopt.pdf_dir_save, pdf_names.fact), dossier_ready);
         fact_promises.push(p_frat);
 
         // ==================== ON GENERE EVENTUELLEMENT LA REFAC
@@ -85,7 +98,7 @@ function genInvoice(dossiernum_or_obj, opt = null) {
         var prestas_refac = getRefacPrestaList(dossier);
 
         if (prestas_refac && prestas_refac.length) {
-          if (opt.debug) console.log("Prestas refacturables trouvées : ", prestas_refac);
+          if (myopt.debug) console.log("Prestas refacturables trouvées : ", prestas_refac);
           // on récupère aussi la liste des acitvités refacturables
           var activities_refac = getRefacActivityList(dossier);
           // on modifie dossier avec uniquement les activités et prestations refacturables
@@ -95,15 +108,15 @@ function genInvoice(dossiernum_or_obj, opt = null) {
           // on parse en mode refac
           try {
             var dossier_refac_ready = parseDossierObj(dossier);
-            if (opt.debug) console.log("Dossier parsed for refac : ", dossier_refac_ready)
+            if (myopt.debug) console.log("Dossier parsed for refac : ", dossier_refac_ready)
           } catch (err_parse_refac) {
             reject(err_parse_refac)
           }
 
           // on génère le PDF de refacturation
-          let p_cimdn = ejs2pdf(refact_template, path.join(opt.pdf_dir_save, pdf_names.refact), dossier_refac_ready);
+          let p_cimdn = ejs2pdf(refact_template, path.join(myopt.pdf_dir_save, pdf_names.refact), dossier_refac_ready);
           fact_promises.push(p_cimdn);
-        } else if (opt.debug) {
+        } else if (myopt.debug) {
           console.log("Pas de refacturation")
         }
         return Promise.all(fact_promises);
@@ -120,7 +133,7 @@ function genInvoice(dossiernum_or_obj, opt = null) {
       })
 
       .catch(err => {
-        if (opt.debug) console.log("Error : ", err);
+        if (myopt.debug) console.log("Error : ", err);
         reject(err)
       })
   })
@@ -152,7 +165,9 @@ function parseDossierObj(dossier) {
     prix_avant_acompte: computePrixAvantAcompte(dossier),
     acompte: int2MoneyString(dossier.acompte),
     prix_final: computePrixFinal(dossier),
-    bank_account: dossier.bank_account
+    bank_account: dossier.bank_account,
+    amount_currency: (int2MoneyString(dossier.amount_currency) || 0),
+    other_currency: (dossier.other_currency || '')
   }
 }
 
@@ -292,13 +307,18 @@ function threePad(i) {
 // ====================================================================
 
 function addInfoToDossier(dossier, opt) {
-  var new_dossier = Object.assign({}, dossier);
+  let new_dossier = Object.assign({}, dossier);
   // écrase et ajoute des informations dans dossier à partir de opt
-  if (opt.fact_num) new_dossier['fact_num'] = opt.fact_num;
-  if (opt.fact_num) console.log("Attention, le numéro de facture a été forcé à " + opt.fact_num + " au lieu de " + fact_num);
-  if (opt.refact_num) new_dossier['refact_num'] = opt.refact_num;
-  if (opt.date_emission) new_dossier['date_emission'] = opt.date_emission;
-  if (opt.bank_account) new_dossier['bank_account'] = opt.bank_account;
+  Object.getOwnPropertyNames(opt).forEach(attr => {
+    if (opt[attr]) new_dossier[attr] = opt[attr]
+  })
+  // if (opt.fact_num) new_dossier['fact_num'] = opt.fact_num;
+  // if (opt.fact_num) console.log("Attention, le numéro de facture a été forcé à " + opt.fact_num + " au lieu de " + dossier.fact_num);
+  // if (opt.refact_num) new_dossier['refact_num'] = opt.refact_num;
+  // if (opt.refact_num) console.log("Attention, le numéro de refacturation a été forcé à " + opt.refact_num + " au lieu de " + dossier.refact_num);
+  // if (opt.date_emission) new_dossier['date_emission'] = opt.date_emission;
+  // if (opt.bank_account) new_dossier['bank_account'] = opt.bank_account;
+  // if (opt.bank_account) new_dossier['bank_account'] = opt.bank_account;
   new_dossier['responsable'] = (opt.responsable || dossier.responsable.prenom + ' ' + dossier.responsable.nom);
   new_dossier['voucher_num'] = opt.voucher_num;
   new_dossier['acompte'] = (opt.acompte || 0);
