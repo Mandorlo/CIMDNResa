@@ -147,7 +147,8 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
 // si refac = true, on parse spécialement pour la refacturation
 function parseDossierObj(dossier) {
   let date_emission = (dossier.date_emission) ? dossier.date_emission : moment().format('DD-MMM-YYYY');
-  console.log("date_emission", date_emission, dossier.date_emission)
+  console.log("amount_currency", dossier.amount_currency)
+  console.log("other_currency", dossier.other_currency)
   return {
     fact_num: dossier.fact_num,
     refact_num: dossier.refact_num, // utilisé uniquement pour la refac éventuelle
