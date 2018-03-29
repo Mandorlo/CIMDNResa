@@ -7,7 +7,7 @@
       Year status
     </div>
     <div class="card_content">
-      How are we performing compared to previous years
+      <currstatus></currstatus>
     </div>
   </div>
 
@@ -26,8 +26,8 @@
       Global charts
     </div>
     <div class="card_content">
-      <flexBarChart></flexBarChart>
-      <flexBarChart></flexBarChart>
+      <flexbarchart></flexbarchart>
+      <flexbarchart></flexbarchart>
     </div>
   </div>
 </div>
@@ -59,7 +59,8 @@ h3.title {
 </style>
 
 <script>
-import flexBarChart from './flexBarChart.vue';
+import flexBarChart from './components/flexBarChart.vue'
+import currStatus from './components/currStatus.vue'
 
 export default {
   name: "stats",
@@ -69,7 +70,8 @@ export default {
     }
   },
   components: {
-    'flexbarchart': flexBarChart
+    'flexbarchart': flexBarChart,
+    'currstatus': currStatus
   },
   methods: {
 

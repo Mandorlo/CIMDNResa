@@ -31,8 +31,8 @@ h3 {
 </style>
 
 <script>
-import Reservation from './Reservation.vue';
-import ModalInvoice from './ModalInvoice.vue';
+import Reservation from './components/Reservation.vue';
+import ModalInvoice from './components/ModalInvoice.vue';
 
 export default {
   name: "invoices",

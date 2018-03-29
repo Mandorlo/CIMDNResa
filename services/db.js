@@ -16,6 +16,7 @@ const config = {
 
 var db = [];
 var mypool = null;
+let lock = false;
 var DEBUG = true;
 
 function queryModel(init_query, model) {
@@ -96,14 +97,17 @@ function parseElement(el, modele) {
 function query(q, keepalive = false) {
   return new Promise((resolve, reject) => {
     getPool().then(pool => {
+      lock = true
       // on lance la query
       pool.request().query(q).then(res => {
         // if (DEBUG) console.log("SQL QUERY : '" + q + "' successful ! Grazie Signore ! (" + res.recordset.length + " result(s))");
         resolve(res.recordset)
         if (!keepalive) sql.close();
+        lock = false
       }).catch(e => {
         if (DEBUG) console.log("Error in query '" + q + "' :", e);
-        if (!keepalive) sql.close();
+        if (!keepalive) sql.close()
+        lock = false
         reject(e)
       })
     }).catch(e => {
@@ -125,11 +129,16 @@ function prepareQuery(q, obj) {
 // connects to mssql or returns the current opened connection pool
 function getPool() {
   return new Promise((resolve, reject) => {
-    if (!mypool) {
+    if (lock) {
+      setTimeout(_ => getPool().then(r => resolve(r)).catch(e => reject(e)), 100)
+    } else if (!mypool) {
+      lock = true
       sql.connect(config).then(pool => {
         mypool = pool;
+        lock = false
         resolve(mypool)
       }).catch(e => {
+        lock = false
         reject(e)
       })
     } else {
@@ -146,8 +155,17 @@ sql.on('error', err => {
 })
 
 function close() {
-  sql.close()
-  mypool = null;
+  if (mypool) {
+    try {
+      sql.close()
+      mypool = null;
+    } catch(e) {
+      throw new Error({
+        'id': 'Impossible de fermer la connection SQL',
+        'data': e
+      })
+    }
+  }
 }
 
 module.exports = {

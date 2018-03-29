@@ -25,9 +25,19 @@ router.get('/query/:stat_name', async (req, res, next) => {
   }
 })
 
-router.get('/query/flex/:x/:y', async (req, res, next) => {
+router.get('/query/flex/:x/:y/:f', async (req, res, next) => {
   try {
-    let stat_res = await stats.getFlex(req.params.x, req.params.y)
+    let stat_res = await stats.getFlex(req.params.x, req.params.y, req.params.f)
+    res.send(stat_res)
+  } catch (e) {
+    res.send({error: 'INVALID_PARAM', description: e})
+  }
+})
+
+router.get('/query/flexdates/:y/:start/:end', async (req, res, next) => {
+  try {
+    // console.log("flexdates", req.params)
+    let stat_res = await stats.getFlexDates(req.params.y, req.params.start, req.params.end)
     res.send(stat_res)
   } catch (e) {
     res.send({error: 'INVALID_PARAM', description: e})

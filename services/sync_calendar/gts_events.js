@@ -54,8 +54,9 @@ let EVENT_LABELS = {
   'Location de salle': /^AUD002$/,
   'Marie dans le monde': /^MDM/,
   'Location salle': /^AUD2$/,
-  'Visite/divers': /^MDN1$/,
-  'Visite de Nazareth': (ev) => (ev.espace == 'MDN' && /ophir/gi.test(ev.agence))
+  'Visite/divers': /^MDN001$/,
+  'Visite de Nazareth': (ev) => (ev.espace == 'MDN' && /ophir/gi.test(ev.agence)),
+  'Concert': /^AUD202$/
 }
 
 let EVENT_COLORS = {
