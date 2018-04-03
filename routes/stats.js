@@ -34,10 +34,11 @@ router.get('/query/flex/:x/:y/:f', async (req, res, next) => {
   }
 })
 
-router.get('/query/flexdates/:y/:start/:end', async (req, res, next) => {
+router.get('/query/flexdates/:x/:y/:start/:end/:projection', async (req, res, next) => {
   try {
-    // console.log("flexdates", req.params)
-    let stat_res = await stats.getFlexDates(req.params.y, req.params.start, req.params.end)
+    let projection = false;
+    if (req.params.projection == 'true') projection = true;
+    let stat_res = await stats.getFlexDates(req.params.x, req.params.y, req.params.start, req.params.end, projection)
     res.send(stat_res)
   } catch (e) {
     res.send({error: 'INVALID_PARAM', description: e})

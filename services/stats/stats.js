@@ -32,14 +32,15 @@ const QUERIES = {
                       (Rs_codeetat = 3 OR Rs_codeetat = 7)
                     GROUP BY @x, @f`,
   flexDates:        `SELECT
-                      @y as y, SUBSTRING(Rs_datedebut,1,4) as x
+                      @y as y, @x as x, SUBSTRING(Rs_datedebut,1,4) as year
                     FROM Reservation
                     LEFT JOIN ReservationPrestation ON Rs_coderesa = Rp_coderesa
                     WHERE
-                     ((Rs_codeetat = 3 OR Rs_codeetat = 7))
-                     AND Rs_datedebut > SUBSTRING(Rs_datedebut,1,4)+'@start'
-                     AND Rs_datedebut < SUBSTRING(Rs_datedebut,1,4)+'@end'
-                    GROUP BY SUBSTRING(Rs_datedebut,1,4)`
+                     ((Rs_codeetat = 3 OR Rs_codeetat = 7 @projection))
+                     AND Rs_datedebut >= SUBSTRING(Rs_datedebut,1,4)+'@start'
+                     AND Rs_datedebut <= SUBSTRING(Rs_datedebut,1,4)+'@end'
+                    GROUP BY @x, SUBSTRING(Rs_datedebut,1,4)`,
+  agencyNames:      `SELECT Co_code, Co_raisonsociale, Co_nom, Co_prenom FROM Contact`
 }
 
 const MODELS = {
@@ -51,6 +52,17 @@ const MODELS = {
     'x': 'x',
     'y': 'y',
     'f': 'f'
+  },
+  flexDates : {
+    'x': 'x',
+    'y': 'y',
+    'year': 'year'
+  },
+  agencyNames: {
+    'id': 'Co_code',
+    'agence': 'Co_raisonsociale',
+    'nom': 'Co_nom',
+    'prenom': 'Co_prenom'
   }
 }
 
@@ -74,39 +86,52 @@ async function getFlex(xlabel, ylabel, filter) {
     time: moment(),
     data: res
   }
-  setTimeout(_ => dbapi.close(), 2000)
+  setTimeout(_ => dbapi.close(), 5000)
   return res
 }
 
-async function getFlexDates(ylabel, start, end) {
-  // start and end can be either a string 'MMDD' or a moment object
-  // if end is undefined, we do end = moment()
-  if (!FLEX.corresp[ylabel]) throw "Problème in getFlexDates statistics"
+async function getFlexDates(xlabel, ylabel, start, end, projection = false) {
+  // @start and @end can be either a string 'MMDD' or a moment object
+  // if @end is undefined, we do @end = moment()
+  // @projection indicates whether we should take into account also the reservations confirmed but not paid yet
+  if (!FLEX.corresp[xlabel] || !FLEX.corresp[ylabel]) throw "Problème in getFlex statistics"
 
+  let x = FLEX.corresp[xlabel]
   let y = FLEX.corresp[ylabel]
   if (typeof start != 'string' && typeof start.format == 'function') start = start.format('MMDD');
   if (!end) end = moment().format('MMDD');
   else if (typeof end != 'string' && typeof end.format == 'function') end = end.format('MMDD');
 
-  let id = 'getFlexDates-'+ylabel+start+end;
+  let id = 'getFlexDates-'+xlabel+ylabel+start+end+projection.toString();
   if (CACHE[id] && moment.duration(moment().diff(CACHE[id].time)).asDays() < 1) return Promise.resolve(CACHE[id].data);
 
-  let query = dbapi.prepareQuery(QUERIES.flexDates, {y, start, end})
-  let res = await dbapi.queryModel(query, MODELS.flex)
+  let query = dbapi.prepareQuery(QUERIES.flexDates, {x, y, start, end, 'projection': (projection) ? 'OR Rs_codeetat = 2' : ''})
+  let res = await dbapi.queryModel(query, MODELS.flexDates)
   CACHE[id] = {
     time: moment(),
     data: res
   }
-  setTimeout(_ => dbapi.close(), 2000)
+  setTimeout(_ => dbapi.close(), 5000)
   return res
 }
 
 async function getStat(stat_name) {
   if (!QUERIES[stat_name] || !MODELS[stat_name]) throw `Impossible de trouver le type de stats "${stat_name}"`
   let res = await dbapi.queryModel(QUERIES[stat_name], MODELS[stat_name])
-  dbapi.close()
+  setTimeout(_ => dbapi.close(), 5000)
   return res
 }
+
+/* =============================== */
+/* STATS on Agencies               */
+/* =============================== */
+
+async function getAllAgencyNames() {
+  let res = await dbapi.queryModel(QUERIES.agencyNames, MODELS.agencyNames)
+  setTimeout(_ => dbapi.close(), 5000)
+  return res
+}
+
 
 module.exports = {
   get: getStat,

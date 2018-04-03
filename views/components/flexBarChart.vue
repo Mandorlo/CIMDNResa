@@ -88,6 +88,7 @@ export default {
         let url = `/stats/query/flex/${this.xlabel}/${this.ylabel}/${this.filter_type}`
         getJSON(url).then(mystats => {
           this.donnees = mystats;
+          if(!mystats || !mystats.length) throw {error: `empty result for ${url}`}
           // on met à jour la liste des filtres dispos
           this.filterval_choices = mystats.map(mystats => mystats.f)
                                           .filter((val, ind, self) => self.indexOf(val) === ind)

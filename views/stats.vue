@@ -16,8 +16,8 @@
       Agency profiles
     </div>
     <div class="card_content">
-      todo. How is it ranked among agencies, chart of frequentation per month (to see if it somes all the year or just in certain seasons)
-
+      <agencyrank></agencyrank>
+      <agencyprofile></agencyprofile>
     </div>
   </div>
 
@@ -61,6 +61,8 @@ h3.title {
 <script>
 import flexBarChart from './components/flexBarChart.vue'
 import currStatus from './components/currStatus.vue'
+import agencyProfile from './components/agencyProfile.vue'
+import agencyRank from './components/agencyRank.vue'
 
 export default {
   name: "stats",
@@ -71,7 +73,9 @@ export default {
   },
   components: {
     'flexbarchart': flexBarChart,
-    'currstatus': currStatus
+    'currstatus': currStatus,
+    'agencyprofile': agencyProfile,
+    'agencyrank': agencyRank
   },
   methods: {
 

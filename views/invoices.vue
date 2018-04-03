@@ -1,6 +1,6 @@
 <template>
 <div class="root_invoices">
-  <h3>Factures à émettre</h3>
+  <h3>Factures à émettre <span v-if="!fact_tbd">&nbsp;<i class="fa fa-spinner fa-pulse"></i></span></h3>
   <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp invoice_table">
     <thead>
       <tr>

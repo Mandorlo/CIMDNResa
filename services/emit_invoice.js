@@ -254,6 +254,7 @@ function parseActivity(activity, agency_name) {
   else if (code == "C1" && theme == "002") return "Location C1";
   else if (code == "C1" && theme == "201") return "Conférence C1";
   else if (code == "AUD" && theme == "002") return "Location Auditorium";
+  else if (code == "VNZT") return "Visit of Nazareth";
   else return "Visit of the center";
 }
 
