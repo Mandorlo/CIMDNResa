@@ -13,7 +13,7 @@ const DEBUG = true
 
 let QUERY_FUTURE_RESA = ` SELECT
                               Rs_coderesa, Rs_datedebut, Rs_codelangue, Rs_libellereservation, Rs_nomliv, Rs_commentaire,
-                              Res_codeespace, Res_codetheme, Res_date, Res_heure, Res_heurefin, Res_nbpers, Res_besinterne
+                              Res_codeespace, Res_codetheme, Res_date, Res_heure, Res_heurefin, Res_nbpers, Res_besinterne, fk_langue
                           FROM Reservation
                           LEFT JOIN ReservationEspace ON Res_numresa = Rs_coderesa
                           WHERE
@@ -25,7 +25,7 @@ let MODEL_FUTURE_RESA = {
   'dossier': 'Rs_coderesa',
   'agence': 'Rs_nomliv',
   'groupe': 'Rs_libellereservation',
-  'lang': 'Rs_codelangue',
+  'lang': 'fk_langue',
   'espace': 'Res_codeespace',
   'theme': 'Res_codetheme',
   'pax': 'Res_nbpers',
