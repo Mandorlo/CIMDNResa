@@ -2,6 +2,8 @@
 <div class="root_currstat">
 
   <h3 class="soustitre">{{thisyear}}</h3>
+  <progressbar2 unit="₪" :title="'Par rapport au CA de '+(thisyear-1).toString()" :value="yearStatus.ca.curryear" :value_prevision="yearProj.ca.curryear" :max="yearProj.ca.lastyear"></progressbar2>
+
   <table>
     <tr>
       <td></td>
@@ -28,12 +30,7 @@
   </table>
 
   <h3 class="soustitre">{{months[thismonthnum]}} {{thisyear}}</h3>
-
-  <div class="projection">
-    Projection du chiffre d'affaires :<br>
-      {{(monthProj.ca.curryear - monthProj.ca.lastyear) * 100 / monthProj.ca.lastyear|number}}% par rapport à {{thisyear-1}}<br>
-      {{(monthProj.ca.curryear - monthProj.ca.moyyear) * 100 / monthProj.ca.moyyear|number}}% par rapport aux 3 dernières années
-  </div>
+  <progressbar2 unit="₪" :title="'Par rapport au CA d\'Avril '+(thisyear-1).toString()" :value="monthStatus.ca.curryear" :value_prevision="monthProj.ca.curryear" :max="monthProj.ca.lastyear"></progressbar2>
 
   <table>
     <tr>
@@ -95,9 +92,13 @@ h3.soustitre {
 
 <script>
 import moment from 'moment'
+import progressBar2 from './ui/progressBar2.vue'
 
 export default {
   name: 'currStatus',
+  components: {
+    "progressbar2": progressBar2
+  },
   data: function() {
     let submodele = {
       curryear: 0,
@@ -126,6 +127,7 @@ export default {
         ca: []
       },
       yearStatus: Object.assign({}, modele),
+      yearProj: Object.assign({}, modele),
       monthStatus: Object.assign({}, modele),
       monthProj: Object.assign({}, modele)
     }
@@ -156,6 +158,19 @@ export default {
         }).catch(e => {
           console.log(url, "Unable to get yearly basic stats in currStatus :(", e)
         })
+        // YEAR PROJECTION ============
+        url = `/stats/query/flexdates/year/${y}/0100/1232/true`
+        getJSON(url).then(mystats => {
+          this.donnees[y] = mystats
+          let curryear_stats = mystats.filter(e => e.x == this.thisyear);
+          let lastyear_stats = mystats.filter(e => e.x == this.thisyear - 1);
+          let moyyear_stats = this.moyenne(mystats);
+          this.yearProj[y].curryear = (curryear_stats) ? curryear_stats[0].y : 0;
+          this.yearProj[y].lastyear = (lastyear_stats) ? lastyear_stats[0].y : 0;
+          this.yearProj[y].moyyear = (moyyear_stats) ? moyyear_stats : 0;
+        }).catch(e => {
+          console.log(url, "Unable to get yearly projection stats in currStatus :(", e)
+        })
         // MONTH ============
         url = `/stats/query/flexdates/year/${y}/${this.thismonth}00/${this.thisday}/false`
         getJSON(url).then(mystats => {
@@ -172,7 +187,7 @@ export default {
           this.monthProj[y].lastyear = mystats.filter(e => e.x == this.thisyear - 1)[0].y
           this.monthProj[y].moyyear = this.moyenne(mystats);
         }).catch(e => {
-          console.log(url, "Unable to get monthly basic stats in currStatus :(", e)
+          console.log(url, "Unable to get monthly projection stats in currStatus :(", e)
         })
       })
     },
