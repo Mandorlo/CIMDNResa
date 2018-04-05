@@ -22,14 +22,14 @@ const QUERIES = {
                     FROM Reservation
                     LEFT JOIN ReservationPrestation ON Rs_coderesa = Rp_coderesa
                     WHERE
-                      (Rs_codeetat = 3 OR Rs_codeetat = 7)
+                      (Rs_codeetat = 3 OR Rs_codeetat = 7 @projection)
                     GROUP BY @x`,
   flexFilter:       `SELECT
                       @y as y, @x as x, @f as f
                     FROM Reservation
                     LEFT JOIN ReservationPrestation ON Rs_coderesa = Rp_coderesa
                     WHERE
-                      (Rs_codeetat = 3 OR Rs_codeetat = 7)
+                      (Rs_codeetat = 3 OR Rs_codeetat = 7 @projection)
                     GROUP BY @x, @f`,
   flexDates:        `SELECT
                       @y as y, @x as x, SUBSTRING(Rs_datedebut,1,4) as year
@@ -67,18 +67,19 @@ const MODELS = {
 }
 
 // utilisé pour les graphiques de la vue flexBarChart.vue
-async function getFlex(xlabel, ylabel, filter) {
+async function getFlex(xlabel, ylabel, filter, b_projection = false) {
   if (!FLEX.corresp[xlabel] || !FLEX.corresp[ylabel]) throw "Problème in getFlex statistics"
-  let id = 'getFlex-'+xlabel+ylabel+filter;
+  let id = 'getFlex-'+xlabel+ylabel+filter+b_projection;
   if (CACHE[id] && moment.duration(moment().diff(CACHE[id].time)).asDays() < 1) return Promise.resolve(CACHE[id].data);
 
   let x = FLEX.corresp[xlabel]
   let y = FLEX.corresp[ylabel]
   let f = FLEX.corresp[filter]
-  let query = dbapi.prepareQuery(QUERIES.flex, {x, y})
+  let projection = (b_projection) ? 'OR Rs_codeetat = 2' : '';
+  let query = dbapi.prepareQuery(QUERIES.flex, {x, y, projection})
   let modele = MODELS.flex
   if (f && f != 'ALL') {
-    query = dbapi.prepareQuery(QUERIES.flexFilter, {x, y, f})
+    query = dbapi.prepareQuery(QUERIES.flexFilter, {x, y, f, projection})
     modele = MODELS.flexFilter
   }
   let res = await dbapi.queryModel(query, modele)

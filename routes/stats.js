@@ -30,7 +30,18 @@ router.get('/query/flex/:x/:y/:f', async (req, res, next) => {
     let stat_res = await stats.getFlex(req.params.x, req.params.y, req.params.f)
     res.send(stat_res)
   } catch (e) {
-    res.send({error: 'INVALID_PARAM', description: e})
+    res.send({error: 'INVALID_PARAM', url: req.originalUrl, description: e})
+  }
+})
+
+router.get('/query/flex/:x/:y/:f/:projection', async (req, res, next) => {
+  try {
+    let projection = false;
+    if (req.params.projection == 'true') projection = true;
+    let stat_res = await stats.getFlex(req.params.x, req.params.y, req.params.f, projection)
+    res.send(stat_res)
+  } catch (e) {
+    res.send({error: 'INVALID_PARAM', url: req.originalUrl, description: e})
   }
 })
 

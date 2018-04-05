@@ -30,7 +30,6 @@
   </table>
 
   <h3 class="soustitre">{{months[thismonthnum]}} {{thisyear}}</h3>
-  <progressbar2 unit="₪" :title="'Par rapport au CA d\'Avril '+(thisyear-1).toString()" :value="monthStatus.ca.curryear" :value_prevision="monthProj.ca.curryear" :max="monthProj.ca.lastyear"></progressbar2>
 
   <table>
     <tr>
@@ -56,6 +55,8 @@
       </td>
     </tr>
   </table>
+
+  <monthlychart></monthlychart>
 
 </div>
 </template>
@@ -93,11 +94,13 @@ h3.soustitre {
 <script>
 import moment from 'moment'
 import progressBar2 from './ui/progressBar2.vue'
+import monthlyChart from './components/monthlyChart.vue'
 
 export default {
   name: 'currStatus',
   components: {
-    "progressbar2": progressBar2
+    "progressbar2": progressBar2,
+    'monthlychart': monthlyChart
   },
   data: function() {
     let submodele = {

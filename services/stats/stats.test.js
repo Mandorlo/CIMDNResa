@@ -6,7 +6,7 @@ test('freq_per_year', async () => {
 })
 
 test('flex query', async () => {
-  let res = await stats.getFlex('agency', 'pax')
+  let res = await stats.getFlex('agency', 'pax', 'year')
   expect.assertions(3)
   expect(res.length).toBeGreaterThan(0)
   expect(res[0]).toHaveProperty('x')

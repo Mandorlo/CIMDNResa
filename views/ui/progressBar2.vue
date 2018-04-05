@@ -80,6 +80,7 @@
 }
 
 .pb2_inside {
+  width: 0;
   background-color: #6363f9;
   cursor: pointer;
   text-align: center;
@@ -115,10 +116,32 @@
 <script>
 export default {
   name: 'progressBar2',
-  props: ['title', 'value', 'max', 'value_prevision', 'unit'],
+  props: {
+    title: {
+      default: '',
+      type: String
+    },
+    value: {
+      default: 0,
+      type: Number
+    },
+    max: {
+      default: 100,
+      type: Number
+    },
+    value_prevision: {
+      default: 0,
+      type: Number
+    },
+    unit: {
+      default: '',
+      type: String
+    }
+  },
+  // props: ['title', 'value', 'max', 'value_prevision', 'unit'],
   data: function() {
     return {
-      unit: ''
+
     }
   },
   computed: {
