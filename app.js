@@ -6,10 +6,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressVue = require('express-vue');
 
+let startup = require('./services/startup.js');
+
 var index = require('./routes/index');
 var users = require('./routes/users');
 var invoices = require('./routes/invoices');
 var stats = require('./routes/stats');
+var resas = require('./routes/resas');
 
 var app = express();
 
@@ -57,6 +60,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/invoices', invoices);
 app.use('/stats', stats);
+app.use('/resas', resas);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -75,5 +79,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+// run the scheduled and startup tasks
+startup.run()
 
 module.exports = app;

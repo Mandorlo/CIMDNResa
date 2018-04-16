@@ -30,32 +30,6 @@
   </table>
 
   <h3 class="soustitre">{{months[thismonthnum]}} {{thisyear}}</h3>
-
-  <table>
-    <tr>
-      <td></td>
-      <td v-for="attr in ['pax', 'resa', 'ca']"><b>{{labels[attr]}}</b></td>
-    </tr>
-    <tr>
-      <td class="line_title"><b>Valeur brute</b></td>
-      <td v-for="attr in ['pax', 'resa', 'ca']">{{monthStatus[attr].curryear|number}} <span v-if="attr=='ca'">&#8362;</span></td>
-    </tr>
-    <tr>
-      <td class="line_title"><b>{{thisyear-1}}</b></td>
-      <td v-for="attr in ['pax', 'resa', 'ca']">
-        {{monthStatus[attr].lastyear|number}} <span v-if="attr=='ca'">&#8362;</span>
-        (<span v-bind:class="{ alerte: monthStatus[attr].lastyear > monthStatus[attr].curryear, good:  monthStatus[attr].lastyear < monthStatus[attr].curryear}">{{(monthStatus[attr].curryear - monthStatus[attr].lastyear) * 100 / monthStatus[attr].lastyear|number}}%</span>)
-      </td>
-    </tr>
-    <tr>
-      <td class="line_title"><b>Moyenne 3 dernières années</b></td>
-      <td v-for="attr in ['pax', 'resa', 'ca']">
-        {{monthStatus[attr].moyyear|number}} <span v-if="attr=='ca'">&#8362;</span>
-        (<span v-bind:class="{ alerte: monthStatus[attr].moyyear > monthStatus[attr].curryear, good: monthStatus[attr].moyyear < monthStatus[attr].curryear}">{{(monthStatus[attr].curryear - monthStatus[attr].moyyear) * 100 / monthStatus[attr].moyyear|number}}%</span>)
-      </td>
-    </tr>
-  </table>
-
   <monthlychart></monthlychart>
 
 </div>

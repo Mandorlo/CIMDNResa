@@ -22,7 +22,7 @@ router.get('/', (req, res, next) => {
       // ]
     }
   }
-  res.renderVue('invoices', data, vueOptions);
+  res.renderVue('pages/invoices', data, vueOptions);
 });
 
 router.get('/:type', (req, res, next) => {

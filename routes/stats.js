@@ -11,7 +11,7 @@ router.get('/', (req, res, next) => {
       title: 'CIMDN Statistiques'
     }
   }
-  res.renderVue('stats', data, vueOptions);
+  res.renderVue('pages/stats', data, vueOptions);
 });
 
 

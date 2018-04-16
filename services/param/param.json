@@ -1,0 +1,28 @@
+{
+  "logging": true,
+  "downloads_dir": "../../public/downloads/",
+  "resa": {
+    "etat": {
+      "OPTION": 1,
+      "CONFIRME": 2,
+      "FACT_EMISE": 3,
+      "DONATION": 7
+    }
+  },
+  "network": {
+    "default_frat_dir": "Z:\\Factures émises\\Frat\\",
+    "default_cimdn_dir": "Z:\\Factures émises\\CIMDN\\"
+  },
+  "invoice": {
+    "prestas_refacturables": ["CAFGPE", "CAF3CPENFG", "CAFPACK3", "CAF3CPADUG", "CAFPACK2", "CAF3CHDGP", "CAFPACK1"],
+    "refac_prices": {
+      "CAFPACK1": 30,
+      "CAFPACK2": 40,
+      "CAFPACK3": 50
+    },
+    "re_fact_num": {
+      "regex": "F\\s[0-9]+",
+      "flags": "g"
+    }
+  }
+}

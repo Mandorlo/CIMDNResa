@@ -6,6 +6,9 @@ This module will be called to
 The main function that does all this is 'genInvoice'
 */
 const dbfact = require('./db_invoices.js');
+const resa = require('./resa/resa.js');
+const files = require('./files/files.js');
+const GPARAM = require('./param/param.js');
 const _ = require('lodash');
 const moment = require('moment');
 const fs = require('fs');
@@ -13,19 +16,11 @@ const path = require('path');
 const ejs2pdf = require('./pdf_renderer/ejs2pdf.js').ejs2pdf;
 // import ejs2pdf from './pdf_renderer/ejs2pdf.js'
 
-const default_frat_dir = "Z:\\Factures émises\\Frat\\";
-const default_cimdn_dir = "Z:\\Factures émises\\CIMDN\\";
+const default_frat_dir = GPARAM.network.default_frat_dir;
+const default_cimdn_dir = GPARAM.network.default_cimdn_dir;
 const fact_template = path.join(__dirname, "./pdf_renderer/templates/pdf-template-invoice.ejs");
 const refact_template = path.join(__dirname, "./pdf_renderer/templates/pdf-template-refac.ejs");
-const PARAM = {
-  prestas_refacturables: ["CAFGPE", "CAF3CPENFG", "CAFPACK3", "CAF3CPADUG", "CAFPACK2", "CAF3CHDGP", "CAFPACK1"],
-  refac_prices: {
-    "CAFPACK1": 30, // au lieu de 35 NIS
-    "CAFPACK2": 40, // au lieu de 43 NIS
-    "CAFPACK3": 50 // au lieu de 55 NIS
-  },
-  re_fact_num: /F\s[0-9]+/g // l'expression régulière des factures
-}
+const PARAM = GPARAM.invoice;
 
 function genInvoice(dossiernum_or_obj, opt = {}) {
   let myopt = {
@@ -37,7 +32,7 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
     annee: null, // annee d'émission de la facture
     acompte: 0, // doit être un int ou decimal !
     bank_account: 'mercantile', // 'mercantile' || 'pax-bank'
-    pdf_dir_save: path.join(__dirname, "../public/downloads/"), // le dossier où sotcker le pdf
+    pdf_dir_save: GPARAM.downloads_dir, // le dossier où sotcker le pdf
   }
   Object.assign(myopt, opt)
   if (myopt.date_emission) myopt.date_emission = moment(myopt.date_emission, "YYYYMMDD").format("DD-MMM-YYYY");
@@ -355,7 +350,7 @@ function getRefacActivityList(dossier) {
 
 function getDossierObj(dossiernum_or_obj) {
   if (typeof dossiernum_or_obj == 'string') {
-    if (dossiernum_or_obj.length == 4) dossiernum_or_obj = "TC0" + dossiernum_or_obj + "*01";
+    dossiernum_or_obj = resa.cleanDossierNum(dossiernum_or_obj)
     return dbfact.getDossier(dossiernum_or_obj)
   } else {
     return Promise.resolve(dossiernum_or_obj)
@@ -380,11 +375,11 @@ function nextFactNum(mydir_list, annee = null) {
   else annee = annee.toString();
   if (!mydir_list) mydir_list = [default_frat_dir, default_cimdn_dir];
   // on teste si les dossiers existent bien
-  var allareDirs = _.reduce(_.map(mydir_list, mydir => isDir(mydir)), (sum, b) => sum && b);
+  var allareDirs = _.reduce(_.map(mydir_list, mydir => files.isDir(mydir)), (sum, b) => sum && b);
   if (!allareDirs) return Promise.reject("'" + mydir_list.join(", ") + "' contains paths that are not a directory ! (in nextFactNum)");
   // on ajoute l'année à la suite des chemins vers les dossiers et on reteste si les dossiers existent bien
   mydir_list = _.map(mydir_list, mydir => path.join(mydir, annee));
-  allareDirs = _.reduce(_.map(mydir_list, mydir => isDir(mydir)), (sum, b) => sum && b);
+  allareDirs = _.reduce(_.map(mydir_list, mydir => files.isDir(mydir)), (sum, b) => sum && b);
   if (!allareDirs) return Promise.reject("'" + mydir_list.join(", ") + "' contains paths that are not a directory ! (in nextFactNum)");
   // si l'année en input est incohérente on renvoie une erreur également
   var delta = parseInt(moment().format('YYYY')) - parseInt(annee);
@@ -424,19 +419,6 @@ function nextFactNum(mydir_list, annee = null) {
     myPromises.push(p)
   })
   return Promise.all(myPromises);
-}
-
-function isDir(path) {
-  try {
-    var d = fs.lstatSync(path).isDirectory();
-    return d
-  } catch (e) {
-    if (e.code == 'ENOENT') {
-      return false
-    } else {
-      return false
-    }
-  }
 }
 
 

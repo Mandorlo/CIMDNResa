@@ -8,7 +8,6 @@ const last_year = (parseInt(curr_year) - 1).toString();
 
 var QUERY_INVOICE = `SELECT
               Rs_coderesa, Rs_operatcreation, Rs_libellereservation, Rs_datedebut, Rs_effectif, Rs_codelangue, Rs_commentaire, Rs_codeetat, Rs_nomliv, Rs_client,
-              Rp_commentaireinterne, Rp_commentaireexterne,
               Ed_libelle,
               Op_nom, Op_prenom,
               Co_code,
@@ -16,9 +15,9 @@ var QUERY_INVOICE = `SELECT
                 Co_raisonsocialefact, fk_paysfact, Co_villefact, Co_codepostalfact, Co_adresse1fact, Co_adresse2fact, Co_adresse3fact
                 Co_raisonsociale, fk_pays, Co_ville, Co_codepostal, Co_adresse1, Co_adresse2, Co_adresse3
             FROM
-              Reservation, ReservationPrestation, EtatDossier, Contact, Operateur
+              Reservation, EtatDossier, Contact, Operateur
             WHERE
-              Rs_coderesa = Rp_coderesa
+              EXISTS (SELECT Rp_coderesa FROM ReservationPrestation WHERE Rp_coderesa = Rs_coderesa)
               AND Op_code = Rs_operatcreation
               AND Co_code = Rs_client
               AND Ed_code = Rs_codeetat AND Rs_codeetat = '@etat'
@@ -77,7 +76,13 @@ var model = {
     "city": el => (el['Co_villefact'] || el['Co_ville'] || '').trim(),
     "country": getCountry
   },
-  "factnum": getFactNum,
+  'factnum': {
+    "_query": `SELECT TOP 1 Rp_commentaireinterne, Rp_commentaireexterne
+              FROM ReservationPrestation
+              WHERE Rp_coderesa = '@Rs_coderesa'
+                    AND (Rp_commentaireinterne IS NOT NULL OR Rp_commentaireexterne IS NOT NULL)`,
+    "_": getFactNum
+  },
   "invoice": {
     "_query": `SELECT Rp_effectif, Rp_codeprest, Rp_libprest, Rp_prixmonnaie1, Rp_mttremise, Rp_montant
               FROM ReservationPrestation
@@ -99,6 +104,19 @@ var model = {
     "espace": "Res_codeespace",
     "theme": "Res_codetheme"
   }
+}
+
+// tells if o is an object that corresponds to the invoice object model
+function isInvoiceObject(o, m = null) {
+  if (m === null) m = Object.assign({}, model)
+  for (let attr of Object.getOwnPropertyNames(m)) {
+    if (!o.hasOwnProperty(attr)) return false
+    else if (typeof m[attr] == 'object') {
+      let b = isInvoiceObject(o[attr], m[attr])
+      if (!b) return false
+    }
+  }
+  return true
 }
 
 function filterInvoicesTBD(el) {
@@ -138,7 +156,9 @@ function getInvoicesTBD() {
     model2['_filter'] = filterInvoicesTBD;
     dbapi.queryModel(query, model2).then(r => {
       dbapi.close()
-      resolve(r)
+      // on filtre uniquement ceux qui n'ont pas de num de facture
+      let r_nofactnum = r.filter(d => !d.factnum)
+      resolve(r_nofactnum)
     }).catch(e => {
       if (DEBUG) console.log("Error in getInvoicesDone: ", e);
       reject(e)
@@ -183,7 +203,8 @@ function getDossier(dossier_num) {
 module.exports = {
   getInvoicesTBD: getInvoicesTBD,
   getInvoicesDone: getInvoicesDone,
-  getDossier: getDossier
+  getDossier: getDossier,
+  isInvoiceObject: isInvoiceObject
 }
 
 

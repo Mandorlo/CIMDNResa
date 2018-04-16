@@ -26,7 +26,7 @@
       </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="number" step="0.01"  id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency">
+        <input class="mdl-textfield__input" type="number" step="0.01" id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency">
         <label class="mdl-textfield__label" for="amount_currency">Montant en devise</label>
         <span class="mdl-textfield__error">Input is not a number!</span>
       </div>
@@ -78,6 +78,10 @@
     <button v-if="!loading" type="button" class="mdl-button" v-on:click="genFacture()">Gen Facture</button>
     <button type="button" class="mdl-button" v-on:click="close()">Close</button>
   </div>
+  <div id="myToast" ref="myToast" class="mdl-js-snackbar mdl-snackbar">
+    <div class="mdl-snackbar__text"></div>
+    <button class="mdl-snackbar__action" type="button"></button>
+  </div>
 </dialog>
 </template>
 
@@ -126,6 +130,12 @@ export default {
     }
   },
   methods: {
+    showToast: function(msg) {
+      this.$refs.myToast.MaterialSnackbar.showSnackbar({
+        message: msg,
+        timeout: 4000
+      });
+    },
     close: function() {
       this.$emit('close')
     },
@@ -154,6 +164,7 @@ export default {
         console.log(o);
         if (o.error) {
           console.log(o);
+          if (o.details && /not a directory/gi.test(o.details)) this.showToast(`Impossible d'accéder au dossier des factures sur Com-Compta. Vérifie que le chemin d'accès est bon dans la page des paramètres`);
           this.loading = false;
         } else {
           this.pdf_paths.fact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.fact)[1];
@@ -161,7 +172,8 @@ export default {
           this.loading = false;
         }
       }).catch(e => {
-        console.log(e);
+        console.log(e)
+        this.showToast(JSON.stringify(e))
         this.loading = false;
       })
     }

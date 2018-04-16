@@ -84,6 +84,8 @@ function parseElement(el, modele) {
     Promise.all(myPromises).then(values => {
       values.forEach((v, i) => {
         newel[myPromisesKeys[i]] = v
+        // cas des champs "_"
+        if (v && Object.getOwnPropertyNames(v).length == 1 && v['_']) newel[myPromisesKeys[i]] = v['_'];
       })
       resolve(newel)
     }).catch(e => {

@@ -20,16 +20,17 @@ try {
 } catch (err) {}
 
 // ========================
-sync().then(r => console.log(`\nAll ${r.length} events synced with Google Calendar !`)).catch(e => console.log(e, "ERROR"))
+// décommenter la ligne ci-dessous pour appeler ce script à la main et synchroniser google calendar
+// sync().then(r => console.log(`\nAll ${r.length} events synced with Google Calendar !`)).catch(e => console.log(e, "ERROR"))
 // ========================
 
 async function sync() {
   let list_events = await gts.getFutureEvents()
   if (DEBUG) fs.writeFile(path.join(TMP_FOLDER, '40_new_events.json'), JSON.stringify(list_events, null, '\t'), 'utf8', _ => 1)
-  console.log(`${list_events.length} future events found in GTS`)
+  //console.log(`${list_events.length} future events found in GTS`)
   let existing_events = await getFutureEvents()
   if (DEBUG) fs.writeFile(path.join(TMP_FOLDER, '50_existing_events.json'), JSON.stringify(existing_events, null, '\t'), 'utf8', _ => 1)
-  console.log(`${existing_events.length} future events found in the Calendar\n`)
+  //console.log(`${existing_events.length} future events found in the Calendar\n`)
   return syncCore(list_events, existing_events)
 }
 
@@ -160,6 +161,7 @@ function printText(texte) {
 }
 
 module.exports = {
+  sync: sync,
   addEvent: addEvent,
   deleteEvent: deleteEvent,
   getFutureEvents: getFutureEvents
