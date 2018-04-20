@@ -36,7 +36,6 @@ function addRoute(fn, opt) {
     let i = 0
     for (let arg of Object.getOwnPropertyNames(req.params)) {
       let v = req.params[arg]
-      console.log('ARG before', v)
       if (opt && opt.length && opt.length > i && opt[i]) v = forceType(v, opt[i]);
       console.log('ARG', v)
       args.push(v)

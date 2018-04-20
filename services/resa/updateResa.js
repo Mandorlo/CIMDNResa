@@ -7,6 +7,7 @@ const TABLES = [{
   id: 'R',
   name: 'Reservation',
   fields: {
+    label: 'Rs_libellereservation',
     numresa: 'Rs_coderesa',
     numhisto: '',
     pax: 'Rs_effectif',
@@ -98,10 +99,11 @@ async function closeResa(numresa, opt) {
 // private core function used by closeResa
 async function closeResaCore(numresa, opt) {
   let comment = (opt.facture && opt.facture != 'donation') ? `@facture : ${opt.facture}`: '';
-  comment =     (opt.voucher)               ? `${comment}\n@voucher : ${opt.voucher}`   : '';
-  comment =     (opt.refac)                 ? `${comment}\n@refac : ${opt.refac}`       : '';
+  comment =     (opt.voucher)               ? `${comment}\n@voucher : ${opt.voucher}`   : comment;
+  comment =     (opt.refac)                 ? `${comment}\n@refac : ${opt.refac}`       : comment;
   let etat =    (opt.facture == 'donation') ? param.resa.etat.DONATION: param.resa.etat.FACT_EMISE; // les codes sont dans la table "EtatDossier"
 
+  console.log('closeresacore', comment)
   let fields = {
     comment,
     etat
@@ -112,6 +114,7 @@ async function closeResaCore(numresa, opt) {
 
 async function updateResa(numresa, fields) {
   let types = {
+    'label': 'string',
     'pax': 'number',
     'pax_fact': 'number',
     'comment': 'string',

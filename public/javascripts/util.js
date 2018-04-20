@@ -1,7 +1,6 @@
 async function remoteCall(fn_name, args) {
   let url = `/RFC/${fn_name}`
   for (let arg of args) {
-    console.log('arg before', arg)
     if (typeof arg != 'string') arg = JSON.stringify(arg);
     console.log('arg', arg)
     url += `/${encodeURIComponent(arg)}`

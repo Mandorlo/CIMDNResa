@@ -127,7 +127,9 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
 
       .then(fact_paths => {
         if (fact_paths.length == 1) resolve({
-          fact: fact_paths[0]
+          fact: fact_paths[0],
+          fact_num: final.fact_num,
+          refact_num: ''
         });
         else resolve({
           fact: fact_paths[0],

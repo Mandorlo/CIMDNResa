@@ -433,6 +433,8 @@ export default {
       return Math.round(total / 100., 2)
     }
   },
+  mounted: function() {
+  },
   methods: {
     showToast(msg) {
       if (!msg) return;
@@ -466,6 +468,7 @@ export default {
       console.log("calling URL ", url);
 
       getJSON(url).then(o => { // use fetch instead of getJSON
+        console.log('cloture before', this.cloture)
         if (o.error || o.errnum) {
           console.log(o);
           if (o.details && /not a directory/gi.test(o.details)) this.showToast(`Impossible d'accéder au dossier des factures sur Com-Compta. Vérifie que le chemin d'accès est bon dans la page des paramètres`);
@@ -481,6 +484,7 @@ export default {
           if (o.refact) this.pdf_paths[this.dossier.id].refact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.refact)[1];
           this.cloture['fact_num'] = o.fact_num;
           this.cloture['refact_num'] = o.refact_num;
+          console.log('cloture', this.cloture)
           this.cloture.voucher_num = this.tobesent.voucher_num;
           this.loading = false;
           this.etape = '2'
@@ -502,7 +506,9 @@ export default {
         return
       }
       if (this.tobesent.voucher_num) opt.voucher = this.tobesent.voucher_num;
-      remoteCall('closeResa', [this.dossier.id, opt]).then(r => console.log(r)).catch(e => console.log('ERR_RFC', e))
+      remoteCall('closeResa', [this.dossier.id, opt]).then(r => {
+        console.log(r) // TODO si r !== true, c'est qu'il y a une erreur !
+      }).catch(e => console.log('ERR_RFC', e))
     }
   }
 }
