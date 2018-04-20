@@ -90,6 +90,9 @@
 .content {
   width: 100%;
   background-color: none;
+  position: absolute;
+  overflow-y: scroll;
+  min-height: 100px;
 }
 
 .hidden_detail {
@@ -137,7 +140,7 @@ export default {
   name: 'resaProfile',
   props: {
     'dossier': {
-      default: {},
+      default: () => {},
       type: Object
     }
   },

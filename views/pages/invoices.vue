@@ -8,7 +8,7 @@
       <tr>
         <th class="mdl-data-table__cell--non-numeric"></th>
         <th class="mdl-data-table__cell--non-numeric">Description</th>
-        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+        <!-- <th class="mdl-data-table__cell--non-numeric">Actions</th> -->
       </tr>
     </thead>
     <tbody>

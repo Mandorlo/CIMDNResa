@@ -1,11 +1,25 @@
-function getJSON(url) {
-  return new Promise((resolve, reject) => {
-    ajax(url).then(res => {
-      resolve(JSON.parse(res))
-    }).catch(e => {
-      reject(e)
-    })
-  })
+async function remoteCall(fn_name, args) {
+  let url = `/RFC/${fn_name}`
+  for (let arg of args) {
+    console.log('arg before', arg)
+    if (typeof arg != 'string') arg = JSON.stringify(arg);
+    console.log('arg', arg)
+    url += `/${encodeURIComponent(arg)}`
+  }
+  console.log('calling remote function : ' + url)
+  return getJSON(url)
+}
+
+async function getJSON(url) {
+  let res = await ajax(url)
+  return JSON.parse(res)
+  // return new Promise((resolve, reject) => {
+  //   ajax(url).then(res => {
+  //     resolve(JSON.parse(res))
+  //   }).catch(e => {
+  //     reject(e)
+  //   })
+  // })
 }
 
 function ajax(url) {

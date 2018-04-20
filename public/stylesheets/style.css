@@ -1,8 +1,16 @@
+html {
+  background-color: #032a5f;
+}
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color: #fffdf5;
+  background-color: #032a5f;
   margin: 0px
+}
+
+h3 {
+  color: white;
 }
 
 a {

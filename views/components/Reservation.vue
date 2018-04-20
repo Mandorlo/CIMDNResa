@@ -6,9 +6,9 @@
     <b>{{data.id}} - {{prettyDate(data.date)}}</b><br>
     {{data.label}}
   </td>
-  <td class="mdl-data-table__cell--non-numeric">
-    <!-- <i class="fa fa-file-text-o icon-action" aria-hidden="true"></i> -->
-  </td>
+  <!-- <td class="mdl-data-table__cell--non-numeric">
+    <i class="fa fa-file-text-o icon-action" aria-hidden="true"></i>
+  </td> -->
 </tr>
 </template>
 

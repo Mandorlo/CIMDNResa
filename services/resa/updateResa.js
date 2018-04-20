@@ -32,6 +32,10 @@ const TABLES = [{
   }
 }]
 
+async function test(a,b,c) {
+  return a+b+c
+}
+
 async function closeResa(numresa, opt) {
   // cloture le dossier numresa
   // opt : {facture, voucher, refac}
@@ -150,7 +154,8 @@ async function updateResa(numresa, fields) {
 }
 
 module.exports = {
-  closeResa: closeResa
+  closeResa: closeResa,
+  test: test
 }
 
 // closeResa('TC02914*01', {facture:'18010', voucher: '123', refac: 'F 8018'}).then(r => console.log(r)).catch(e => console.log('ERROR', e))

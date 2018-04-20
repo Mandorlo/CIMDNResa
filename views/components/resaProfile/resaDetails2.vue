@@ -182,82 +182,184 @@ option.currency {
   transform: translate(0px, -80px);
   transition: transform 0.3s ease-out;
 }
+
+.fil_ariane {
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.information {
+  margin: 2em;
+  font-family: monospace;
+  text-align: center;
+}
+
+.ou {
+  text-align: center;
+  margin-top: -0.5em;
+  margin-bottom: 0.5em;
+}
+
+.cloture_donation {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.cloture_donation select {
+  width: 40%;
+  height: 30px;
+}
 </style>
 
 <template>
 <div class="root_rpd2">
-  <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
-  <button v-if="!loading" type="button" class="mdl-button gen_fact_btn" v-on:click="genFacture()">Créer la facture de {{total_price}} &#x20AA;</button>
-
-  <!-- Liens vers les factures générées -->
-  <div class="facture_links" v-if="pdf_paths[dossier.id]">
-    <div class="facture_item" v-if="pdf_paths[dossier.id].fact">
-      <a target="_blank" :href="pdf_paths[dossier.id].fact">
-      <i class="fa fa-download"></i><br><span>facture</span>
-    </a>
-    </div>
-    <div class="facture_item" v-if="pdf_paths[dossier.id].refact">
-      <a target="_blank" :href="pdf_paths[dossier.id].refact">
-      <i class="fa fa-download"></i><br><span>refact.</span>
-    </a>
-    </div>
+  <div class="fil_ariane">
+    <filariane :fil="[{id:'1'}, {id:'2'}, {id:'3'}]" v-model="etape"></filariane>
   </div>
 
-  <!-- Numéro de voucher -->
-  <div class="presta field_container">
-    <div class="icone"><i class="fa fa-file-text-o"></i></div>
-    <div class="field_c2">
-      <label class="field_label" for="voucher_num">Voucher N°</label>
-      <input class="field_input" type="text" id="voucher_num" name="voucher_num" v-model="tobesent.voucher_num">
+  <!-- ================================================================ -->
+  <!--                    ETAPE 3 : CLOTURE DU DOSSIER                  -->
+  <!-- ================================================================ -->
+  <div class="etape" v-if="etape == '3' && !loading">
+    <div class="cloture_donation">
+      <select v-model="cloture.type">
+        <option value="donation">Donation</option>
+        <option value="facture">Facture</option>
+      </select>
     </div>
-  </div>
 
-  <div class="presta check_container" v-if="!check.advanced">
-    <div class="icone" @click="check.advanced = true"><i class="fa fa-square"></i></div>
-    <div class="check_label" for="voucher_num">Afficher les options avancées</div>
-  </div>
-  <div class="advanced_container" v-if="check.advanced">
-    <!-- Ajouter le montant dans une autre devise -->
-    <div class="presta check_container" v-if="!check.symbol_currency">
-      <div class="icone" @click="check.symbol_currency = true"><i class="fa fa-square"></i></div>
-      <div class="check_label" for="voucher_num">Ajouter le montant dans une devise autre que le NIS</div>
-    </div>
-    <div class="presta field_container" v-if="check.symbol_currency">
-      <div class="icone" @click="resetOption(['symbol_currency', 'amount_currency'])"><i class="fa" :class="{'fa-euro': tobesent.symbol_currency == '€' || tobesent.symbol_currency == ''}"></i></div>
+    <!-- Cloture : N° de voucher -->
+    <div class="presta field_container" v-if="cloture.type != 'donation'">
+      <div class="icone"><i class="fa fa-calendar"></i></div>
       <div class="field_c2">
-        <label class="field_label" for="amount_currency">Montant en {{tobesent.symbol_currency || "(choisir la devise)"}}</label>
-        <input class="field_input" type="number" id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency" :disabled="tobesent.symbol_currency == ''">
+        <label class="field_label" for="cloture_voucher">N° de voucher</label>
+        <input type="text" name="cloture_voucher" v-model="cloture.voucher_num">
       </div>
-      <div>
-        <select class="currency" v-model="tobesent.symbol_currency">
+    </div>
+
+    <!-- Cloture : N° de facture -->
+    <div class="presta field_container" v-if="cloture.type != 'donation'">
+      <div class="icone"><i class="fa fa-calendar"></i></div>
+      <div class="field_c2">
+        <label class="field_label" for="cloture_fact">N° de facture</label>
+        <input type="text" name="cloture_fact" v-model="cloture.fact_num">
+      </div>
+    </div>
+
+    <!-- Cloture : N° de re-facturation éventuel -->
+    <div class="presta field_container" v-if="cloture.type != 'donation'">
+      <div class="icone"><i class="fa fa-calendar"></i></div>
+      <div class="field_c2">
+        <label class="field_label" for="cloture_refact">N° de refacturation éventuel</label>
+        <input type="text" name="cloture_refact" v-model="cloture.refact_num">
+      </div>
+    </div>
+
+    <!-- <input v-if="cloture.type != 'donation'" type="text" name="cloture_fact" v-model="cloture.fact_num" placeholder="N° de facture"> -->
+    <!-- <input v-if="cloture.type != 'donation'" type="text" name="cloture_refact" v-model="cloture.refact_num" placeholder="N° de refacturation éventuel"> -->
+    <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
+    <button v-if="!loading" type="button" class="mdl-button gen_fact_btn" v-on:click="closeDossier()">Clôturer le dossier {{dossier.id}}</button>
+  </div>
+
+  <!-- ================================================================ -->
+  <!--                ETAPE 2 : TÉLÉCHARGER LA FACTURE                  -->
+  <!-- ================================================================ -->
+  <!-- Liens vers les factures générées -->
+  <div class="etape" v-if="etape == '2' && pdf_paths[dossier.id] && !loading">
+    <div class="information">
+      Télécharge <span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les factures</span><span v-else>la facture</span> ci-dessous et enregistre-les sur Com-Compta. Ensuite tu pourras clôturer le dossier.
+    </div>
+
+    <div class="facture_links" v-if="pdf_paths[dossier.id] && !loading">
+      <div class="facture_item" v-if="pdf_paths[dossier.id].fact">
+        <a target="_blank" :href="pdf_paths[dossier.id].fact">
+          <i class="fa fa-download"></i><br><span>facture</span>
+        </a>
+      </div>
+      <div class="facture_item" v-if="pdf_paths[dossier.id].refact && !loading">
+        <a target="_blank" :href="pdf_paths[dossier.id].refact">
+          <i class="fa fa-download"></i><br><span>refact.</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!--                    ETAPE 1 : GÉNÉRER LA FACTURE                  -->
+  <!-- ================================================================ -->
+  <div class="etape" v-if="etape == '1'">
+    <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
+    <div class="btn_cloture" v-if="!loading">
+      <button type="button" class="mdl-button gen_fact_btn" v-on:click="genFacture()">
+        Créer la facture de {{total_price}} &#x20AA;
+      </button>
+      <div class="ou" v-if="tobesent.voucher_num == tobesent_default.voucher_num">OU</div>
+      <button type="button" class="mdl-button gen_fact_btn" v-on:click="setDonation()" v-if="tobesent.voucher_num == tobesent_default.voucher_num">
+        Pas de facture, donation
+      </button>
+    </div>
+
+    <!-- Numéro de voucher -->
+    <div class="presta field_container">
+      <div class="icone"><i class="fa fa-file-text-o"></i></div>
+      <div class="field_c2">
+        <label class="field_label" for="voucher_num">Voucher N°</label>
+        <input class="field_input" type="text" id="voucher_num" name="voucher_num" v-model="tobesent.voucher_num">
+      </div>
+    </div>
+
+    <div class="presta check_container" v-if="!check.advanced">
+      <div class="icone" @click="check.advanced = true"><i class="fa fa-square"></i></div>
+      <div class="check_label">Afficher les options avancées</div>
+    </div>
+    <div class="advanced_container" v-if="check.advanced">
+      <!-- Ajouter le montant dans une autre devise -->
+      <div class="presta check_container" v-if="!check.other_currency">
+        <div class="icone" @click="check.other_currency = true"><i class="fa fa-square"></i></div>
+        <div class="check_label">Ajouter le montant dans une devise autre que le NIS</div>
+      </div>
+      <div class="presta field_container" v-if="check.other_currency">
+        <div class="icone" @click="resetOption(['other_currency', 'amount_currency'])"><i class="fa" :class="{'fa-euro': tobesent.other_currency == '€' || tobesent.other_currency == ''}"></i></div>
+        <div class="field_c2">
+          <label class="field_label" for="amount_currency">Montant en {{tobesent.other_currency || "(choisir la devise)"}}</label>
+          <input class="field_input" type="number" id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency" :disabled="tobesent.other_currency == ''">
+        </div>
+        <div>
+          <select class="currency" v-model="tobesent.other_currency">²
           <option class="currency" value=""></option>
           <option class="currency" value="€">€</option>
           <option class="currency" value="$">$</option>
         </select>
+        </div>
       </div>
-    </div>
 
-    <!-- Forcer numéro de facture -->
-    <div class="presta check_container" v-if="!check.fact_num">
-      <div class="icone" @click="check.fact_num = true"><i class="fa fa-square"></i></div>
-      <div class="check_label" for="voucher_num">Forcer le numéro de facture</div>
-    </div>
-    <div class="presta field_container" v-if="check.fact_num">
-      <div class="icone" @click="resetOption('fact_num')"><i class="fa fa-calendar"></i></div>
-      <div class="field_c2">
-        <label class="field_label" for="fact_num">Forcer le numéro de facture</label>
-        <input class="field_input" type="text" id="fact_num" name="fact_num" pattern="F\s[0-9]+" v-model="tobesent.fact_num">
-        <div class="error_input" v-if="!/^F [0-9]{5}$/.test(tobesent.fact_num)  && tobesent.fact_num !== ''">Le numéro de facture rentré est invalide, il doit être de la form "F XXXXX", par exemple : "F 18056"</div>
+      <!-- Forcer numéro de facture -->
+      <div class="presta check_container" v-if="!check.fact_num">
+        <div class="icone" @click="check.fact_num = true"><i class="fa fa-square"></i></div>
+        <div class="check_label">Forcer le numéro de facture</div>
       </div>
-    </div>
+      <div class="presta field_container" v-if="check.fact_num">
+        <div class="icone" @click="resetOption('fact_num')"><i class="fa fa-calendar"></i></div>
+        <div class="field_c2">
+          <label class="field_label" for="fact_num">Forcer le numéro de facture</label>
+          <input class="field_input" type="text" id="fact_num" name="fact_num" pattern="F\s[0-9]+" v-model="tobesent.fact_num">
+          <div class="error_input" v-if="!/^F [0-9]{5}$/.test(tobesent.fact_num)  && tobesent.fact_num !== ''">Le numéro de facture rentré est invalide, il doit être de la form "F XXXXX", par exemple : "F 18056"</div>
+        </div>
+      </div>
 
-    <!-- Forcer numéro de re-facture -->
-    <div class="presta field_container">
-      <div class="icone"><i class="fa fa-calendar"></i></div>
-      <div class="field_c2">
-        <label class="field_label" for="refact_num">Forcer le numéro de re-facturation interne</label>
-        <input class="field_input" type="text" id="fact_num" name="refact_num" pattern="F\s[0-9]+" v-model="tobesent.refact_num">
-        <div class="error_input" v-if="!/^F [0-9]{4}$/.test(tobesent.refact_num) && tobesent.refact_num !== ''">Le numéro de facture rentré est invalide, il doit être de la form "F XXXX", par exemple : "F 8015"</div>
+      <!-- Forcer numéro de re-facture -->
+      <div class="presta check_container" v-if="!check.refact_num">
+        <div class="icone" @click="check.refact_num = true"><i class="fa fa-square"></i></div>
+        <div class="check_label">Forcer le numéro de re-facturation</div>
+      </div>
+      <div class="presta field_container" v-if="check.refact_num">
+        <div class="icone" @click="resetOption('refact_num')"><i class="fa fa-calendar"></i></div>
+        <div class="field_c2">
+          <label class="field_label" for="refact_num">Forcer le numéro de re-facturation interne</label>
+          <input class="field_input" type="text" id="refact_num" name="refact_num" pattern="F\s[0-9]+" v-model="tobesent.refact_num">
+          <div class="error_input" v-if="!/^F [0-9]{4}$/.test(tobesent.refact_num) && tobesent.refact_num !== ''">Le numéro de facture rentré est invalide, il doit être de la form "F XXXX", par exemple : "F 8015"</div>
+        </div>
       </div>
     </div>
   </div>
@@ -268,7 +370,7 @@ option.currency {
 </template>
 
 <script>
-import rectField from './components/rectField.vue';
+import filAriane from './components/filAriane.vue';
 
 import moment from 'moment';
 
@@ -276,12 +378,12 @@ export default {
   name: 'resaDetails2',
   props: {
     dossier: {
-      default: {},
+      default: () => {},
       type: Object
     }
   },
   components: {
-    'rectfield': rectField
+    'filariane': filAriane
   },
   data: function() {
     let tobesent_default = {
@@ -293,17 +395,24 @@ export default {
       refact_num: '',
       pax: null,
       amount_currency: 0.0,
-      symbol_currency: ''
+      other_currency: ''
     }
 
     return {
+      etape: '1',
+      cloture: {
+        type: 'facture',
+        fact_num: '',
+        refact_num: '',
+        voucher_num: ''
+      },
       toast: {
         show: false,
         msg: ''
       },
       check: {
         advanced: false,
-        symbol_currency: false,
+        other_currency: false,
         fact_num: false,
         refact_num: false
       },
@@ -325,7 +434,7 @@ export default {
     }
   },
   methods: {
-    showToast: function(msg) {
+    showToast(msg) {
       if (!msg) return;
       this.toast.msg = msg;
       this.toast.show = true;
@@ -338,24 +447,30 @@ export default {
         if (this.check.hasOwnProperty(o)) this.check[o] = false;
       })
     },
+    setDonation() {
+      this.cloture.type = 'donation';
+      this.cloture['fact_num'] = 'donation';
+      this.etape = '3'
+    },
     genFacture() {
       this.loading = true;
       let url = '/invoices/gen/' + this.dossier.id;
       let args = "?";
       Object.getOwnPropertyNames(this.tobesent).forEach(k => {
-        if (this.tobesent[k]) {
+        if (k.substr(0, 2) != '__' && this.tobesent[k] != this.tobesent_default[k]) {
           url = url + args + k + "=" + this.tobesent[k];
           args = "&"
         }
       })
-      url = url.substr(0, url.length - 1)
+      // if (args == "&") url = url.substr(0, url.length - 1);
       console.log("calling URL ", url);
 
       getJSON(url).then(o => { // use fetch instead of getJSON
-        console.log(o);
-        if (o.error) {
+        if (o.error || o.errnum) {
           console.log(o);
           if (o.details && /not a directory/gi.test(o.details)) this.showToast(`Impossible d'accéder au dossier des factures sur Com-Compta. Vérifie que le chemin d'accès est bon dans la page des paramètres`);
+          else if (o.details) this.showToast(o.details);
+          else this.showToast(JSON.stringify(o))
           this.loading = false;
         } else {
           this.pdf_paths = {}
@@ -364,13 +479,30 @@ export default {
             refact: ''
           }
           if (o.refact) this.pdf_paths[this.dossier.id].refact = "/downloads/" + /downloads[\/\\](.+)$/g.exec(o.refact)[1];
+          this.cloture['fact_num'] = o.fact_num;
+          this.cloture['refact_num'] = o.refact_num;
+          this.cloture.voucher_num = this.tobesent.voucher_num;
           this.loading = false;
+          this.etape = '2'
         }
       }).catch(e => {
         console.log(e)
         this.showToast(JSON.stringify(e))
         this.loading = false;
       })
+    },
+    closeDossier() {
+      let opt = {
+        facture: this.cloture.fact_num,
+        refac: this.cloture.refact_num
+      }
+      if (!opt.facture && this.cloture.type == 'donation') opt.facture = 'donation';
+      if (!opt.facture) {
+        this.showToast("Le mode de clôture n'a pas encore été choisi ! (facture ou donation)")
+        return
+      }
+      if (this.tobesent.voucher_num) opt.voucher = this.tobesent.voucher_num;
+      remoteCall('closeResa', [this.dossier.id, opt]).then(r => console.log(r)).catch(e => console.log('ERR_RFC', e))
     }
   }
 }

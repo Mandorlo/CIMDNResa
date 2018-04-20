@@ -1,6 +1,7 @@
 /* This is executed on server startup or on a certain interval */
 // this is run in app.js
 
+const path = require('path')
 const log = require('./log/log.js')
 const googleCalendar = require('./sync_calendar/calendar.js')
 const files = require('./files/files.js')
@@ -20,14 +21,6 @@ function run() {
       return moment().format('HH:mm:ss') < '21:00:00' && moment().format('HH:mm:ss') > '08:30:00'
     }
   })
-
-  // on exécute régulièrement un nettoyage du dossier de download
-  scheduleInterval(clearDownloadFolder, {
-    interval: {
-      unit: 'month',
-      val: 3
-    }
-  })
 }
 
 // synchronisation du calendrier Google
@@ -39,15 +32,6 @@ function syncCal() {
     .catch(e => {
       log.write("Google Calendar Sync FAILURE", e)
     })
-}
-
-// nettoyage du dossier de downloads
-function clearDownloadFolder() {
-  files.clearFolder(param.downloads_dir).then(r => {
-    log.write('Clear Download Folder Success', '')
-  }).catch(e => {
-    log.write('Clear Download Folder FAILURE', e)
-  })
 }
 
 

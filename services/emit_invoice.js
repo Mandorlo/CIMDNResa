@@ -37,6 +37,11 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
   Object.assign(myopt, opt)
   if (myopt.date_emission) myopt.date_emission = moment(myopt.date_emission, "YYYYMMDD").format("DD-MMM-YYYY");
 
+  let final = {
+    fact_num: '',
+    refact_num: ''
+  }
+
   return new Promise((resolve, reject) => {
     let whenDossierReceived = getDossierObj(dossiernum_or_obj);
     let whenFactNumReceived;
@@ -82,6 +87,9 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
         // on génère le nom du fichier pdf de facture
         let pdf_names = genPDFInvoiceNames(dossier);
         if (myopt.debug === true) console.log("PDF filenames = ", pdf_names);
+        // on sauve en passant les numéros de facture :
+        final.fact_num = dossier.fact_num;
+        final.refact_num = dossier.refact_num;
 
         // on génère le PDF facture
         let p_frat = ejs2pdf(fact_template, path.join(myopt.pdf_dir_save, pdf_names.fact), dossier_ready);
@@ -123,7 +131,9 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
         });
         else resolve({
           fact: fact_paths[0],
-          refact: fact_paths[1]
+          refact: fact_paths[1],
+          fact_num: final.fact_num,
+          refact_num: final.refact_num
         })
       })
 
@@ -309,13 +319,6 @@ function addInfoToDossier(dossier, opt) {
   Object.getOwnPropertyNames(opt).forEach(attr => {
     if (opt[attr]) new_dossier[attr] = opt[attr]
   })
-  // if (opt.fact_num) new_dossier['fact_num'] = opt.fact_num;
-  // if (opt.fact_num) console.log("Attention, le numéro de facture a été forcé à " + opt.fact_num + " au lieu de " + dossier.fact_num);
-  // if (opt.refact_num) new_dossier['refact_num'] = opt.refact_num;
-  // if (opt.refact_num) console.log("Attention, le numéro de refacturation a été forcé à " + opt.refact_num + " au lieu de " + dossier.refact_num);
-  // if (opt.date_emission) new_dossier['date_emission'] = opt.date_emission;
-  // if (opt.bank_account) new_dossier['bank_account'] = opt.bank_account;
-  // if (opt.bank_account) new_dossier['bank_account'] = opt.bank_account;
   new_dossier['responsable'] = (opt.responsable || dossier.responsable.prenom + ' ' + dossier.responsable.nom);
   new_dossier['voucher_num'] = opt.voucher_num;
   new_dossier['acompte'] = (opt.acompte || 0);

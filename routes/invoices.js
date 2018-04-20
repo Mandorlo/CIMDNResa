@@ -3,6 +3,7 @@ var router = express.Router();
 var dbfact = require('../services/db_invoices.js');
 var invoices = require('../services/emit_invoice.js');
 var path = require('path');
+const files = require('../services/files/files.js')
 
 router.get('/', (req, res, next) => {
   const data = {
@@ -67,9 +68,7 @@ router.get('/gen/:dossier', (req, res, next) => {
 
   var dossier_num = req.params.dossier;
 
-  let opt = {
-    pdf_dir_save: path.join(__dirname, '../public/downloads')
-  }
+  let opt = {}
   Object.getOwnPropertyNames(req.query).forEach(k => {
     opt[k] = req.query[k];
   })

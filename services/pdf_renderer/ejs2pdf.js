@@ -27,7 +27,12 @@ async function ejs2pdf(template_path, output_path, data, opt = {}) {
     }
     let code = await ph.renderPhantom(ph_script, tmp_path, output_path, opt_ph);
     if (!opt['keep_tmp_files']) fs.unlinkSync(tmp_path);
-    return output_path;
+    if (fs.existsSync(output_path)) return output_path;
+    else throw {
+      errnum: 'PHANTOM_FAILURE',
+      fun: 'pdf_renderer > ejs2pdf',
+      details: 'Phantomjs script html => pdf failed'
+    }
   } catch (e) {
     if (!opt['keep_tmp_files'] && fs.existsSync(tmp_path)) fs.unlinkSync(tmp_path);
     throw e
@@ -52,7 +57,8 @@ function randomString(n) {
 }
 
 module.exports = {
-  ejs2pdf: ejs2pdf
+  ejs2pdf: ejs2pdf,
+  ejs2html: ejs2html
 }
 // export default ejs2pdf;
 
