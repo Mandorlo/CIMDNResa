@@ -54,6 +54,11 @@
   color: white;
   margin-top: 0.4em;
   font-size: 1.5em;
+  border: none;
+  background-color: #ffffff00;
+  outline: none;
+  width: 80%;
+  text-align: center;
 }
 
 .agency_label {
@@ -106,6 +111,42 @@
   opacity: 1;
   transition: all 0.1s ease-out;
 }
+
+.btn_change_label {
+  font-size: 1em;
+  position: absolute;
+  top: 160px;
+  right: 10px;
+  background-color: white;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.toast {
+  position: absolute;
+  bottom: -80px;
+  opacity: 0;
+  height: 80px;
+  width: 85%;
+  margin-left: 5%;
+  margin-right: 5%;
+  background-color: #333;
+  color: white;
+  font-size: 0.9em;
+  line-height: 1.2em;
+  padding: 1em;
+  transition: all 0.2s ease-in;
+}
+
+.toast_active {
+  opacity: 1;
+  transform: translate(0px, -80px);
+  transition: transform 0.3s ease-out;
+}
 </style>
 
 <template>
@@ -117,7 +158,11 @@
     </div>
     <div class="num_dossier hidden_detail">ID:{{abbr_id}}</div>
     <div class="avatar"><i class="fa fa-star"></i></div>
-    <div class="label">{{dossier.label}}</div>
+    <input class="label" name="new_label" v-model="label.new">
+    <div class="btn_change_label" @click="changeLabel" v-on:keyup.enter="changeLabel" v-show="label.new != label.original">
+      <i v-if="!label.loading" class="fa fa-arrow-right"></i>
+      <i v-if="label.loading" class="fa fa-spinner fa-pulse"></i>
+    </div>
     <div class="agency_label">{{dossier.agency.name}}</div>
   </div>
   <div class="tabs_container">
@@ -127,6 +172,10 @@
     <resadetails1 v-if="content_type == 'RESA'" :dossier="dossier"></resadetails1>
     <resadetails2 v-if="content_type == 'FACT'" :dossier="dossier"></resadetails2>
     <resadetails3 v-if="content_type == 'INFO'" :dossier="dossier"></resadetails3>
+  </div>
+
+  <div class="toast" v-bind:class="{toast_active: toast.show}">
+    {{toast.msg}}
   </div>
 </div>
 </template>
@@ -151,6 +200,15 @@ export default {
   },
   data: function() {
     return {
+      toast: {
+        show: false,
+        msg: ''
+      },
+      label: {
+        original: '',
+        new: '',
+        loading: false
+      },
       show_details: false,
       content_type: 'FACT',
       content_types: [{
@@ -170,9 +228,41 @@ export default {
       return this.dossier.id.substr(3, 4)
     }
   },
+  mounted: function() {
+    this.label.new = this.dossier.label
+    this.label.original = this.dossier.label
+  },
+  watch: {
+    dossier: function() {
+      this.label.new = this.dossier.label
+      this.label.original = this.dossier.label
+    }
+  },
   methods: {
+    showToast(msg, temps = 4000) {
+      if (!msg) return;
+      this.toast.msg = msg;
+      this.toast.show = true;
+      setTimeout(_ => this.toast.show = false, temps)
+    },
     showDetails: function() {
       this.show_details = true
+    },
+    changeLabel: function() {
+      this.label.loading = true;
+      let fields = {
+        label: this.label.new
+      }
+      remoteCall('updateResa', [this.dossier.id, fields]).then(r => {
+        console.log(r)
+        this.label.original = this.label.new
+        this.showToast('Le nom de groupe a été changé, merci Seigneur pour ta bonté !')
+        this.label.loading = false;
+      }).catch(e => {
+        console.log('ERROR update label', e)
+        this.showToast('Il y a une erreur lors de la mise à jour du nom du groupe :( Seigneur prends pitié de nous')
+        this.label.loading = false;
+      })
     }
   }
 }

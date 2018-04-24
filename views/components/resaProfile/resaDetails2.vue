@@ -508,6 +508,10 @@ export default {
       if (this.tobesent.voucher_num) opt.voucher = this.tobesent.voucher_num;
       remoteCall('closeResa', [this.dossier.id, opt]).then(r => {
         console.log(r) // TODO si r !== true, c'est qu'il y a une erreur !
+        if (r !== true) this.showToast(JSON.stringify(r));
+        else {
+          this.showToast("Le dossier a été clôturé avec succès, que le nom du Seigneur soit béni !")
+        }
       }).catch(e => console.log('ERR_RFC', e))
     }
   }

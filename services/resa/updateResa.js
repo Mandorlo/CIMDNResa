@@ -157,6 +157,7 @@ async function updateResa(numresa, fields) {
 }
 
 module.exports = {
+  updateResa: updateResa,
   closeResa: closeResa,
   test: test
 }

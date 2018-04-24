@@ -65,6 +65,7 @@ function forceType(v, typ) {
 
 addRoute(updateResa.test, ['number', 'number', 'number'])
 addRoute(updateResa.closeResa, ['string', 'object'])
+addRoute(updateResa.updateResa, ['string', 'object'])
 
 addRoute(guides.get, ['string'])
 addRoute(guides.updateDB)
