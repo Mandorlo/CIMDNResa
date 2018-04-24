@@ -24,5 +24,32 @@
       "regex": "F\\s[0-9]+",
       "flags": "g"
     }
-  }
+  },
+  "agencies": [
+    {
+      "irec_id": "118",
+      "irec_name": "TERRA DEI TOURIST AGENCY LTD",
+      "logo": "http://terradeitours.com/wp-content/uploads/2017/02/terradeitours-logo.jpg"
+    },
+    {
+      "irec_id": "221",
+      "irec_name": "IGT ISRAEL & GLOBAL TRAVEL",
+      "logo": "https://igt.co.il//wp-content/uploads/2016/09/Logo_White-1.png"
+    },
+    {
+      "irec_id": "257",
+      "irec_name": "TRAVEX",
+      "logo": "http://www.travex.co.il/wp-content/uploads/2016/01/logoNew.png"
+    },
+    {
+      "irec_id": "258",
+      "irec_name": "SYRAAN TOURS",
+      "logo": "https://pbs.twimg.com/profile_images/482811607634821120/O-1xmgzu.png"
+    },
+    {
+      "irec_id": "",
+      "irec_name": "",
+      "logo": "http://www.terrasanctatours.com/wp-content/uploads/2016/05/logo3-300x123.png"
+    }
+  ]
 }

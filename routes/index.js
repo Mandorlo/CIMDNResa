@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const updateResa = require('../services/resa/updateResa.js')
+const guides = require('../services/stats/guides.js')
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -65,5 +66,7 @@ function forceType(v, typ) {
 addRoute(updateResa.test, ['number', 'number', 'number'])
 addRoute(updateResa.closeResa, ['string', 'object'])
 
+addRoute(guides.get, ['string'])
+addRoute(guides.updateDB)
 
 module.exports = router;

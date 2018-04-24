@@ -43,6 +43,7 @@ h3.title {
   margin-left: 10%;
   margin-bottom: 1.5em;
   box-shadow: 0px 3px 4px #8888885e;
+  background-color: white;
 }
 
 .card_title {

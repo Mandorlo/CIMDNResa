@@ -9,14 +9,14 @@ const param = require('../param/param.js')
 let lock = false;
 let streamLog = null;
 
-function write(title, data) {
+function write(type, title, data) {
   if (!lock) {
-    setTimeout(_ => write(title, data), 500)
+    setTimeout(_ => write(type, title, data), 500)
     return
   }
   if (!param.logging) return;
   if (typeof data != 'string') data = JSON.stringify(data);
-  data = `${moment().format('YYYY-MM-DD HH:mm:ss')} == ${title} == ${data}\n`
+  data = `${moment().format('YYYY-MM-DD HH:mm:ss')} ::${type}:: ${title} -- ${data}\n`
 
   if (streamLog === null) {
     streamLog = fs.createWriteStream(LOG_PATH, {
@@ -32,7 +32,7 @@ function write(title, data) {
     streamLog = null;
     console.log("ERROR couldn't write log, stream reinitialized")
     lock = false
-    setTimeout(_ => write(title, data), 2000)
+    setTimeout(_ => write(type, title, data), 2000)
   }
   lock = false
   // stream.end();
