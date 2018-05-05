@@ -7,20 +7,20 @@
 
 .noeud {
   color: white;
-  background-color: gray;
+  background-color: #dedede;
   border-radius: 100%;
-  height: 15px;
-  width: 15px;
+  height: 20px;
+  width: 20px;
   text-align: center;
-  line-height: 15px;
+  line-height: 20px;
   cursor: pointer;
 }
 
 .fil {
   height: 4px;
-  background-color: gray;
+  background-color: #dedede;
   position: relative;
-  top: 6px;
+  top: 8px;
 }
 
 .chosen {

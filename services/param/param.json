@@ -27,9 +27,39 @@
   },
   "agencies": [
     {
+      "irec_id": "237",
+      "irec_name": "VIA EMMAUS TOURS",
+      "accountant": "accounts@viaemmaustours.com",
+      "logo": "https://media.licdn.com/dms/image/C560BAQEQogoS2CJNow/company-logo_200_200/0?e=2124662400&v=beta&t=wsPRbELv-EQ2pVRvpaXVWwCvLLSsAZGigCFc2Q6vCmE"
+    },
+    {
+      "irec_id": "267",
+      "irec_name": "G2 TRAVEL - ISRAEL",
+      "logo": "http://israel.g2-travel.com/G2Travel/images/logo.png"
+    },
+    {
+      "irec_id": "7",
+      "irec_name": "GENESIS TOURS",
+      "logo": "",
+      "special_info": "GENESIS veut qu'on envoie systématiquement le voucher avec la facture.",
+      "accountant": "rodrigo@genesis-tours.co.il"
+    },
+    {
+      "irec_id": "133",
+      "irec_name": "BIPEL / EPHATA VOYAGE",
+      "logo": "",
+      "special_info": "Pour BIPEL / EPHATA on ajoute le montant en euros également et on affiche le compte Pax-Bank (au lieu de Mercantile) sur la facture",
+      "RULES": {
+        "bank_account": "paxbank",
+        "other_currency": "€"
+      }
+    },
+    {
       "irec_id": "118",
       "irec_name": "TERRA DEI TOURIST AGENCY LTD",
-      "logo": "http://terradeitours.com/wp-content/uploads/2017/02/terradeitours-logo.jpg"
+      "logo": "http://terradeitours.com/wp-content/uploads/2017/02/terradeitours-logo.jpg",
+      "special_info": "",
+      "accountant": "youssef.terradei@gmail.com"
     },
     {
       "irec_id": "221",
@@ -47,8 +77,8 @@
       "logo": "https://pbs.twimg.com/profile_images/482811607634821120/O-1xmgzu.png"
     },
     {
-      "irec_id": "",
-      "irec_name": "",
+      "irec_id": "30",
+      "irec_name": "TERRA SANCTA TESTCO",
       "logo": "http://www.terrasanctatours.com/wp-content/uploads/2016/05/logo3-300x123.png"
     }
   ]

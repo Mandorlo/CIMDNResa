@@ -31,7 +31,7 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
     responsable: null,
     annee: null, // annee d'émission de la facture
     acompte: 0, // doit être un int ou decimal !
-    bank_account: 'mercantile', // 'mercantile' || 'pax-bank'
+    bank_account: 'mercantile', // 'mercantile' || 'paxbank'
     pdf_dir_save: GPARAM.downloads_dir, // le dossier où sotcker le pdf
   }
   Object.assign(myopt, opt)
@@ -55,7 +55,7 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
     Promise.all([whenDossierReceived, whenFactNumReceived])
 
       .then(res_list => {
-        if (myopt.debug === true) console.log("GTS dossier = ", JSON.stringify(dossier, null, '  '));
+        if (myopt.debug === true) console.log("GTS dossier = ", JSON.stringify(res_list, null, '  '));
         return res_list
       })
 
@@ -208,7 +208,7 @@ function parseInvoices(dossier) {
 }
 
 function parsePrestation(presta, agency_name) {
-  var code = presta['code'];
+  let code = presta['code']
   if (code == "CAFGPE") return "Menu 3 groupe";
   else if (code == "CAF3CPENFG") return "Menu 3 groupe";
   else if (code == "CAFPACK3") return "Pack 3 groupe";

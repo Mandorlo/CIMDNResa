@@ -36,12 +36,12 @@ function queryModel(init_query, model) {
         if (/^SELECT TOP 1 /gi.test(init_query)) resolve(values[0]);
         else resolve(values)
       }).catch(e => {
-        sql.close();
+        // sql.close();
         reject(e)
       })
     }).catch(e => {
       if (DEBUG) console.log("Error in queryModel");
-      sql.close();
+      // sql.close();
       reject(e)
     })
   })
@@ -85,7 +85,9 @@ function parseElement(el, modele) {
       values.forEach((v, i) => {
         newel[myPromisesKeys[i]] = v
         // cas des champs "_"
-        if (v && Object.getOwnPropertyNames(v).length == 1 && v['_']) newel[myPromisesKeys[i]] = v['_'];
+        if (typeof v == 'object' && Object.getOwnPropertyNames(v).length == 1 && v.hasOwnProperty('_')) {
+          newel[myPromisesKeys[i]] = v['_'];
+        }
       })
       resolve(newel)
     }).catch(e => {
@@ -96,7 +98,7 @@ function parseElement(el, modele) {
 }
 
 // returns a promise with results of the query
-function query(q, keepalive = false) {
+function query(q, keepalive = true) {
   return new Promise((resolve, reject) => {
     getPool().then(pool => {
       lock = true
@@ -104,11 +106,11 @@ function query(q, keepalive = false) {
       pool.request().query(q).then(res => {
         // if (DEBUG) console.log("SQL QUERY : '" + q + "' successful ! Grazie Signore ! (" + res.recordset.length + " result(s))");
         resolve(res.recordset)
-        if (!keepalive) sql.close();
+        if (!keepalive) close()
         lock = false
       }).catch(e => {
         if (DEBUG) console.log("Error in query '" + q + "' :", e);
-        if (!keepalive) sql.close()
+        if (!keepalive) close()
         lock = false
         reject(e)
       })
@@ -161,7 +163,9 @@ function close() {
     try {
       sql.close()
       mypool = null;
+      lock = false
     } catch(e) {
+      lock = false
       throw new Error({
         'id': 'Impossible de fermer la connection SQL',
         'data': e

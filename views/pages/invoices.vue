@@ -19,17 +19,21 @@
 
   <div class="inv_details_container">
     <transition name="slide-fade">
-      <!-- <div v-if="show_details" class="inv_details">Lodate Dio !</div> -->
       <resaprofile v-if="show_details" class="inv_details" :dossier="curr_dossier"></resaprofile>
     </transition>
   </div>
 
-  <!-- <modalinvoice :show.sync="showInvoiceModal" :dossier="curr_dossier" v-on:close="closeModalInvoice()"></modalinvoice> -->
-  <modalinvoice ref="invoicemodal" :dossier="curr_dossier" v-on:close="closeModalInvoice()"></modalinvoice>
 </div>
 </template>
 
 <style>
+.close_details {
+  position: absolute;
+  z-index: 100;
+  top: 0px;
+  right: 0px;
+}
+
 h3 {
   margin-left: 5%;
 }
@@ -71,10 +75,18 @@ h3 {
   background-color: #dce4eb;
 }
 
-.invoice_table {
-  width: 90%;
-  margin-left: 5%;
-  max-width: 700px;
+@media screen and (min-width: 600px) {
+  .invoice_table {
+    width: 90%;
+    margin-left: 5%;
+    max-width: 700px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .invoice_table {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 </style>
 
@@ -106,7 +118,6 @@ export default {
         console.log(dossier)
         this.show_details = true;
       }
-      // this.$refs.invoicemodal.$el.showModal();
     },
     closeModalInvoice() {
       this.$refs.invoicemodal.$el.close();

@@ -31,6 +31,7 @@ const vueOptions = {
       head: {
         title: "CIMDN Resa",
         meta: [
+          {name: 'viewport', content: 'width=device-width, initial-scale=1'},
           {script: 'https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js'},
           {script: 'https://code.getmdl.io/1.3.0/material.min.js'},
           {script: 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js'},

@@ -1,7 +1,8 @@
-const dbapi = require('./db.js');
-const moment = require('moment');
+const dbapi = require('./db.js')
+const moment = require('moment')
+const PARAM = require('./param/param.js')
 
-const DEBUG = true;
+const DEBUG = true
 
 const curr_year = moment().format("YYYY");
 const last_year = (parseInt(curr_year) - 1).toString();
@@ -48,7 +49,7 @@ var COUNTRIES = {
   'IL': 'ISRAEL'
 }
 
-var model = {
+let model = {
   "id": "Rs_coderesa",
   "label": "Rs_libellereservation",
   "date": "Rs_datedebut", // type = string YYYYMMDD
@@ -120,12 +121,12 @@ function isInvoiceObject(o, m = null) {
 }
 
 function filterInvoicesTBD(el) {
-  var m = moment(el['Rs_datedebut'], 'YYYYMMDD');
+  let m = moment(el['Rs_datedebut'], 'YYYYMMDD');
   return m.isBefore(moment())
 }
 
 function getStreet(el) {
-  var s = (el['Co_adresse1fact'] || '') + " " + (el['Co_adresse2fact'] || '');
+  let s = (el['Co_adresse1fact'] || '') + " " + (el['Co_adresse2fact'] || '');
   if (!s.trim()) s = (el['Co_adresse1'] || '') + " " + (el['Co_adresse2'] || '');
   return s.trim()
 }
@@ -135,8 +136,8 @@ function getCountry(el) {
 }
 
 function getFactNum(el) {
-  var s = (el['Rp_commentaireinterne'] || '') + " " + (el['Rp_commentaireexterne'] || '');
-  var res = /facture\s*:?\s*([^\r\n\<]+)?([\r\n\<]|$)/gi.exec(s);
+  let s = (el['Rp_commentaireinterne'] || '') + " " + (el['Rp_commentaireexterne'] || '');
+  let res = /facture\s*:?\s*([^\r\n\<]+)?([\r\n\<]|$)/gi.exec(s);
   try {
     if (res && res.length > 1) return res[1].trim();
   } catch(e) {
@@ -149,15 +150,17 @@ function getFactNum(el) {
 // renvoie une promesse avec les dossiers à facturer
 function getInvoicesTBD() {
   return new Promise((resolve, reject) => {
-    var query = dbapi.prepareQuery(QUERY_INVOICE, {
+    let query = dbapi.prepareQuery(QUERY_INVOICE, {
       etat: '2'
     });
-    var model2 = Object.assign({}, model);
+    let model2 = Object.assign({}, model);
     model2['_filter'] = filterInvoicesTBD;
     dbapi.queryModel(query, model2).then(r => {
-      dbapi.close()
+      // dbapi.close()
       // on filtre uniquement ceux qui n'ont pas de num de facture
       let r_nofactnum = r.filter(d => !d.factnum)
+      // on ajoute des infos supplémentaires
+      r_nofactnum_plus = r_nofactnum.map(i => addInfo(i))
       resolve(r_nofactnum)
     }).catch(e => {
       if (DEBUG) console.log("Error in getInvoicesDone: ", e);
@@ -173,7 +176,7 @@ function getInvoicesDone() {
       etat: '3'
     });
     dbapi.queryModel(query, model).then(r => {
-      dbapi.close();
+      // dbapi.close();
       resolve(r)
     }).catch(e => {
       if (DEBUG) console.log("Error in getInvoicesDone: ", e);
@@ -190,7 +193,7 @@ function getDossier(dossier_num) {
       dossier_num: dossier_num
     });
     dbapi.queryModel(query, model).then(r => {
-      dbapi.close();
+      // dbapi.close();
       if (r && r.length) resolve(r[0]);
       else reject("No results to getDossier (for Invoices) N° " + dossier_num)
     }).catch(e => {
@@ -198,6 +201,16 @@ function getDossier(dossier_num) {
       reject(e)
     });
   })
+}
+
+// i is an invoice object (as retrieved in getInvoicesTBD)
+// it adds additional info about for example the agency, from the PARAM
+function addInfo(i) {
+  let agency_param = PARAM.agencies.filter(a => a.irec_name == i.agency.name)
+  if (agency_param && agency_param.length) {
+    i.agency = Object.assign(i.agency, agency_param[0])
+  }
+  return i
 }
 
 module.exports = {

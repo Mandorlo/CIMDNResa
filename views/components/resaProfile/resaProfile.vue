@@ -43,10 +43,36 @@
   border-radius: 100%;
   height: 70px;
   width: 70px;
-  line-height: 70px;
   font-size: 30px;
   color: #00347f;
   background-color: #ffffffb3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatar_pax {
+  margin-top: 5px;
+}
+
+.avatar_pax_input {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: center;
+  color: #032a5f;
+  font-size: 1em;
+  margin-left: 13px;
+  margin-top: -3px;
+  outline: none;
+}
+
+.avatar_paxlabel {
+  font-size: 0.5em;
+  color: #00347f69;
+  margin-top: -5px;
 }
 
 .label {
@@ -97,7 +123,7 @@
   background-color: none;
   position: absolute;
   overflow-y: scroll;
-  min-height: 100px;
+  min-height: 500px;
 }
 
 .hidden_detail {
@@ -126,9 +152,23 @@
   cursor: pointer;
 }
 
+.btn_change_globalpax {
+  font-size: 0.5em;
+  position: absolute;
+  top: 118px;
+  right: 46%;
+  background-color: white;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+}
+
 .toast {
   position: absolute;
-  bottom: -80px;
+  bottom: -100px;
   opacity: 0;
   height: 80px;
   width: 85%;
@@ -152,18 +192,31 @@
 <template>
 <div class="root_rp">
   <div class="header">
+
     <div class="date hidden_detail">
       <div class="date_long">{{moment(dossier.date, 'YYYYMMDD').format('dddd D MMMM YYYY')}}</div>
       <div class="date_human">({{moment(dossier.date, 'YYYYMMDD').fromNow()}})</div>
     </div>
+
     <div class="num_dossier hidden_detail">ID:{{abbr_id}}</div>
-    <div class="avatar"><i class="fa fa-star"></i></div>
-    <input class="label" name="new_label" v-model="label.new">
-    <div class="btn_change_label" @click="changeLabel" v-on:keyup.enter="changeLabel" v-show="label.new != label.original">
+
+    <div class="avatar" @click="showModalForm">
+      <div class="avatar_pax" v-if="!all_pax_identical">{{dossier.pax}}</div>
+      <input class="avatar_pax_input" v-if="all_pax_identical" type="number" v-model="pax_global.new">
+      <div class="btn_change_globalpax" @click="changeGlobalPax" v-show="pax_global.new != pax_global.original">
+        <i v-if="!pax_global.loading" class="fa fa-arrow-right"></i>
+        <i v-if="pax_global.loading" class="fa fa-spinner fa-pulse"></i>
+      </div>
+      <div class="avatar_paxlabel">&nbsp;<span v-show="pax_global.new == pax_global.original">PAX</span>&nbsp;</div>
+    </div>
+
+    <input class="label" name="new_label" v-model="label.new" v-on:keyup.enter="changeLabel">
+    <div class="btn_change_label" @click="changeLabel" v-show="label.new != label.original">
       <i v-if="!label.loading" class="fa fa-arrow-right"></i>
       <i v-if="label.loading" class="fa fa-spinner fa-pulse"></i>
     </div>
     <div class="agency_label">{{dossier.agency.name}}</div>
+
   </div>
   <div class="tabs_container">
     <div v-for="t of content_types" class="tab" v-bind:class="{active: content_type == t.id}" @click="content_type=t.id">{{t.label}}</div>
@@ -177,6 +230,10 @@
   <div class="toast" v-bind:class="{toast_active: toast.show}">
     {{toast.msg}}
   </div>
+
+  <modalform ref="modalform" data="paxform">
+    <input type="number" id="pax_global" name="pax_global" v-model="pax_global.new">
+  </modalform>
 </div>
 </template>
 
@@ -184,6 +241,7 @@
 import resaDetails1 from './components/resaProfile/resaDetails1.vue';
 import resaDetails2 from './components/resaProfile/resaDetails2.vue';
 import resaDetails3 from './components/resaProfile/resaDetails3.vue';
+import modalForm from './components/modalForm.vue';
 
 export default {
   name: 'resaProfile',
@@ -196,13 +254,19 @@ export default {
   components: {
     "resadetails1": resaDetails1,
     "resadetails2": resaDetails2,
-    "resadetails3": resaDetails3
+    "resadetails3": resaDetails3,
+    "modalform": modalForm
   },
   data: function() {
     return {
       toast: {
         show: false,
         msg: ''
+      },
+      pax_global: {
+        original: 0,
+        new: 0,
+        loading: false
       },
       label: {
         original: '',
@@ -226,19 +290,35 @@ export default {
   computed: {
     abbr_id: function() {
       return this.dossier.id.substr(3, 4)
+    },
+    all_pax_identical: function() {
+      let b = this.dossier.pax = this.dossier.activities[0].pax
+      console.log('all_pax_identical', b, this.dossier.invoice.map(a => a.pax))
+      return b && this.dossier.invoice
+        .map(a => a.pax)
+        .reduce((a, p) => a && (p == this.dossier.pax), true)
     }
   },
   mounted: function() {
-    this.label.new = this.dossier.label
-    this.label.original = this.dossier.label
+    this.reset()
   },
   watch: {
     dossier: function() {
-      this.label.new = this.dossier.label
-      this.label.original = this.dossier.label
+      this.reset()
     }
   },
   methods: {
+    reset() {
+      this.label.new = this.dossier.label
+      this.label.original = this.dossier.label
+
+      this.pax_global.new = this.dossier.pax
+      this.pax_global.original = this.dossier.pax
+    },
+    showModalForm() {
+      if (this.all_pax_identical) return
+      this.$refs.modalform.show()
+    },
     showToast(msg, temps = 4000) {
       if (!msg) return;
       this.toast.msg = msg;
@@ -249,19 +329,29 @@ export default {
       this.show_details = true
     },
     changeLabel: function() {
-      this.label.loading = true;
       let fields = {
         label: this.label.new
       }
+      this.updateField(fields, 'label', 'nom du groupe')
+    },
+    changeGlobalPax: function() {
+      let fields = {
+        pax: this.pax_global.new,
+        pax_fact: this.pax_global.new
+      }
+      this.updateField(fields, 'pax_global', 'nombre de pax global')
+    },
+    updateField: function(fields, field_name, field_label) {
+      this[field_name].loading = true;
       remoteCall('updateResa', [this.dossier.id, fields]).then(r => {
         console.log(r)
-        this.label.original = this.label.new
-        this.showToast('Le nom de groupe a été changé, merci Seigneur pour ta bonté !')
-        this.label.loading = false;
+        this[field_name].original = this[field_name].new
+        this.showToast(`Le ${field_label} a été changé, merci Seigneur pour ta bonté !`)
+        this[field_name].loading = false;
       }).catch(e => {
-        console.log('ERROR update label', e)
-        this.showToast('Il y a une erreur lors de la mise à jour du nom du groupe :( Seigneur prends pitié de nous')
-        this.label.loading = false;
+        console.log(`ERROR update ${field_name}`, e)
+        this.showToast(`Il y a une erreur lors de la mise à jour de ${field_label} :( Seigneur prends pitié de nous`)
+        this[field_name].loading = false;
       })
     }
   }

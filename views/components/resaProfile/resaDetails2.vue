@@ -20,7 +20,7 @@
   padding: 10px;
   display: flex;
   flex-wrap: wrap;
-  height: 50px;
+  min-height: 50px;
 }
 
 .field_c2 {
@@ -113,6 +113,8 @@ option.currency {
   background-color: #0082b96b;
   color: white;
   text-align: center;
+  line-height: 1.4em;
+  height: 4.5em;
 }
 
 .gen_fact_btn:hover {
@@ -210,6 +212,15 @@ option.currency {
   width: 40%;
   height: 30px;
 }
+
+.info {
+  font-family: "Courier New";
+  font-size: 0.8em;
+  background-color: #06336a;
+  color: white;
+  padding: 4px;
+  border-radius: 5px;
+}
 </style>
 
 <template>
@@ -268,7 +279,10 @@ option.currency {
   <!-- Liens vers les factures générées -->
   <div class="etape" v-if="etape == '2' && pdf_paths[dossier.id] && !loading">
     <div class="information">
-      Télécharge <span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les factures</span><span v-else>la facture</span> ci-dessous et enregistre-les sur Com-Compta. Ensuite tu pourras clôturer le dossier.
+      Télécharge <span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les factures</span><span v-else>la facture</span> ci-dessous et enregistre-les sur Com-Compta.
+      Ensuite tu pourras envoyer le mail de facturation (avec le voucher)
+      <span v-if="dossier.agency.accountant">à <a :href="'mailto:' + dossier.agency.accountant">{{dossier.agency.accountant}}</a></span>.
+      Seulement après cela, tu pourras clôturer le dossier.
     </div>
 
     <div class="facture_links" v-if="pdf_paths[dossier.id] && !loading">
@@ -283,6 +297,10 @@ option.currency {
         </a>
       </div>
     </div>
+
+    <button type="button" class="mdl-button gen_fact_btn" v-on:click="etape = '3'">
+      Clôturer le dossier
+    </button>
   </div>
 
   <!-- ================================================================ -->
@@ -292,7 +310,9 @@ option.currency {
     <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
     <div class="btn_cloture" v-if="!loading">
       <button type="button" class="mdl-button gen_fact_btn" v-on:click="genFacture()">
-        Créer la facture de {{total_price}} &#x20AA;
+        Créer la facture de
+        <br>{{total_price}} &#x20AA;
+        <br>pour {{global_fact_pax}} pax<br>
       </button>
       <div class="ou" v-if="tobesent.voucher_num == tobesent_default.voucher_num">OU</div>
       <button type="button" class="mdl-button gen_fact_btn" v-on:click="setDonation()" v-if="tobesent.voucher_num == tobesent_default.voucher_num">
@@ -326,11 +346,30 @@ option.currency {
           <input class="field_input" type="number" id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency" :disabled="tobesent.other_currency == ''">
         </div>
         <div>
-          <select class="currency" v-model="tobesent.other_currency">²
-          <option class="currency" value=""></option>
-          <option class="currency" value="€">€</option>
-          <option class="currency" value="$">$</option>
-        </select>
+          <select class="currency" v-model="tobesent.other_currency">
+            <option class="currency" value=""></option>
+            <option class="currency" value="€">€</option>
+            <option class="currency" value="$">$</option>
+          </select>
+        </div>
+        <div class="info" v-show="tobesent.other_currency == '€' && tobesent.bank_account != 'paxbank'">
+          Pour les montants en euros, il est conseillé de renseigner le compte Pax-Bank plutôt que le compte Mercantile
+        </div>
+      </div>
+
+      <!-- Changer le compte bancaire -->
+      <div class="presta check_container" v-if="!check.bank_account">
+        <div class="icone" @click="check.bank_account = true"><i class="fa fa-square"></i></div>
+        <div class="check_label">Changer le compte bancaire de facturation (Mercantile par défaut)</div>
+      </div>
+      <div class="presta field_container" v-if="check.bank_account">
+        <div class="icone" @click="resetOption('bank_account')"><i class="fa fa-calendar"></i></div>
+        <div class="field_c2">
+          <label class="field_label" for="bank_account">Changer le compte bancaire de facturation</label>
+          <select class="bank" v-model="tobesent.bank_account">
+            <option class="bank" value="mercantile">Mercantile</option>
+            <option class="bank" value="paxbank">Pax-Bank</option>
+          </select>
         </div>
       </div>
 
@@ -390,7 +429,7 @@ export default {
       voucher_num: "",
       annee_emission: moment().year().toString(),
       date_emission: "",
-      bank_account: 'mercantile',
+      bank_account: 'mercantile', // = 'mercantile' ou 'paxbank'
       fact_num: '',
       refact_num: '',
       pax: null,
@@ -413,6 +452,7 @@ export default {
       check: {
         advanced: false,
         other_currency: false,
+        bank_account: false,
         fact_num: false,
         refact_num: false
       },
@@ -427,10 +467,16 @@ export default {
       let total = 0
       if (this.dossier && this.dossier.invoice && this.dossier.invoice.length) {
         this.dossier.invoice.forEach(i => {
-          total += i.price * 100
+          total += i.price_per_pax * i.pax * 100
         })
       }
       return Math.round(total / 100., 2)
+    },
+    global_fact_pax() {
+      let ref_pax = this.dossier.invoice[0].pax
+      let all_equal = this.dossier.invoice.map(i => i.pax).reduce((a,p) => a && p == ref_pax)
+      if (all_equal) return ref_pax;
+      else return '?'
     }
   },
   mounted: function() {

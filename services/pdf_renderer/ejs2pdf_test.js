@@ -46,7 +46,7 @@ async function ejs2htmlTEST() {
     prix_avant_acompte: 'price_before_acompte',
     acompte: 'acompte',
     prix_final: 'prix_final',
-    bank_account: 'mercantile',
+    bank_account: 'paxbank',
     amount_currency: 'montant_devise',
     other_currency: 'sym_devise'
   }
@@ -64,7 +64,9 @@ async function html2pdfTEST() {
     debug: true,
     timeout_ms: 10000
   }
-  let res = await execPh.renderPhantom(ph_script, TMP_PATH.html, TMP_PATH.pdf, opt_ph)
+  let res1 = await ejs2htmlTEST()
+  let res2 = await execPh.renderPhantom(ph_script, TMP_PATH.html, TMP_PATH.pdf, opt_ph)
+  return res2
 }
 
 html2pdfTEST().then(r => console.log(r)).catch(e => console.log('ERROR', e))
