@@ -29,6 +29,7 @@ const TABLES = [{
     numhisto: 'Rp_numhisto',
     pax: '',
     pax_fact: 'Rp_effectif',
+    prix_unit: 'Rp_prixmonnaie1',
     comment: 'Rp_commentaireinterne'
   }
 }]
@@ -118,7 +119,8 @@ async function updateResa(numresa, fields) {
     'pax': 'number',
     'pax_fact': 'number',
     'comment': 'string',
-    'etat': 'number'
+    'etat': 'number',
+    'prix_unit': 'number'
   }
   let results = []
   numresa = resa.cleanDossierNum(numresa)

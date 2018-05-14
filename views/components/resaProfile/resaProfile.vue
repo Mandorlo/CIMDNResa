@@ -167,8 +167,9 @@
 }
 
 .toast {
+  display: none;
   position: absolute;
-  bottom: -100px;
+  bottom: -10px;
   opacity: 0;
   height: 80px;
   width: 85%;
@@ -179,10 +180,12 @@
   font-size: 0.9em;
   line-height: 1.2em;
   padding: 1em;
+  z-index: 0;
   transition: all 0.2s ease-in;
 }
 
 .toast_active {
+  display: block;
   opacity: 1;
   transform: translate(0px, -80px);
   transition: transform 0.3s ease-out;

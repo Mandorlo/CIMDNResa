@@ -32,7 +32,8 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
     annee: null, // annee d'émission de la facture
     acompte: 0, // doit être un int ou decimal !
     bank_account: 'mercantile', // 'mercantile' || 'paxbank'
-    pdf_dir_save: GPARAM.downloads_dir, // le dossier où sotcker le pdf
+    pdf_dir_save: GPARAM.downloads_dir, // le dossier où stocker le pdf
+    forced_labels: {} // to force the label of a presta (code => label)
   }
   Object.assign(myopt, opt)
   if (myopt.date_emission) myopt.date_emission = moment(myopt.date_emission, "YYYYMMDD").format("DD-MMM-YYYY");
@@ -199,7 +200,7 @@ function parseInvoices(dossier) {
   // si refac = true, on change le prix qd c'est des packs
   return _.map(dossier['invoice'], presta => {
     return {
-      name: parsePrestation(presta, dossier.agency.name),
+      name: presta.forced_label || parsePrestation(presta, dossier.agency.name),
       price_per_pax: int2MoneyString(presta.price_per_pax),
       pax: presta.pax,
       price_total: int2MoneyString(presta.price_per_pax * presta.pax)
@@ -219,6 +220,7 @@ function parsePrestation(presta, agency_name) {
   else if (code == "BIL100") return "Route 3";
   else if (code == "BIL102") return "Route 2";
   else if (code == "BIL101") return "Route 1";
+  else if (code == "VNZT") return "Visit of Nazareth";
   else if (code == 'DON' && agency_name == "OPHIR-PELTOURS") return "Visit of Nazareth";
   else return code;
 }
@@ -327,6 +329,12 @@ function addInfoToDossier(dossier, opt) {
   if (opt.pax) {
     new_dossier['pax'] = parseInt(opt.pax);
     for (var i = 0; i < new_dossier['invoice'].length; i++) new_dossier['invoice'][i].pax = opt.pax;
+  }
+  if (Object.getOwnPropertyNames(opt.forced_labels).length) {
+    for (let i = 0; i < new_dossier['invoice'].length; i++) {
+      let flabel = opt.forced_labels[new_dossier['invoice'][i].code]
+      if (flabel) new_dossier['invoice'][i].forced_label = flabel
+    }
   }
   return new_dossier
 }

@@ -70,7 +70,9 @@ router.get('/gen/:dossier', (req, res, next) => {
 
   let opt = {}
   Object.getOwnPropertyNames(req.query).forEach(k => {
-    opt[k] = req.query[k];
+    if (k == 'forced_labels') {
+      opt[k] = JSON.parse(req.query[k]);
+    } else opt[k] = req.query[k];
   })
 
   invoices.genInvoice(dossier_num, opt)

@@ -165,7 +165,7 @@ option.currency {
 
 .toast {
   position: absolute;
-  bottom: -80px;
+  bottom: -10px;
   opacity: 0;
   height: 80px;
   width: 85%;
@@ -220,6 +220,30 @@ option.currency {
   color: white;
   padding: 4px;
   border-radius: 5px;
+}
+
+.btn_showdetails {
+  cursor: pointer;
+  text-align: center;
+  color: gray;
+  margin-bottom: 1em;
+}
+.btn_showdetails:hover {
+  color: #063d73;
+}
+
+.invoice_line {
+  display: flex;
+  padding: 1em;
+  justify-content: space-between;
+}
+
+.btn_change_presta {
+  cursor: pointer;
+}
+
+input.presta_label {
+  min-width: 140px;
 }
 </style>
 
@@ -279,7 +303,8 @@ option.currency {
   <!-- Liens vers les factures générées -->
   <div class="etape" v-if="etape == '2' && pdf_paths[dossier.id] && !loading">
     <div class="information">
-      Télécharge <span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les factures</span><span v-else>la facture</span> ci-dessous et enregistre-les sur Com-Compta.
+      Télécharge <span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les factures</span><span v-else>la facture</span> ci-dessous 
+      et enregistre-<span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les</span><span v-else>la</span> sur Com-Compta.
       Ensuite tu pourras envoyer le mail de facturation (avec le voucher)
       <span v-if="dossier.agency.accountant">à <a :href="'mailto:' + dossier.agency.accountant">{{dossier.agency.accountant}}</a></span>.
       Seulement après cela, tu pourras clôturer le dossier.
@@ -307,12 +332,29 @@ option.currency {
   <!--                    ETAPE 1 : GÉNÉRER LA FACTURE                  -->
   <!-- ================================================================ -->
   <div class="etape" v-if="etape == '1'">
+    <div class="btn_showdetails" @click="$refs.InvoiceDetailsModal.show()"><i class="fa fa-eye"></i>&nbsp;Vérifier les détails</div>
+    <modalform ref="InvoiceDetailsModal">
+        <div class="invoice_line" v-for="pr of prestas" :key="pr.code">
+          <input class="presta_label" type="text" :name="pr.code" v-model="pr.label">
+          <div>{{pr.price_per_pax}} &#8362;</div>
+          <div>{{pr.pax}}</div>
+          <div>{{pr.pax * pr.price_per_pax}} &#8362;</div>
+          <div class="btn_change_presta" @click="changePresta" v-show="1!=1 || prestaChanged(pr.code)">
+            <i v-if="!pr.loading" class="fa fa-arrow-right"></i>
+            <i v-if="pr.loading" class="fa fa-spinner fa-pulse"></i>
+          </div>
+        </div>
+        <div class="invoice_line total">
+          TOTAL = {{dossier.invoice.map(el => el.pax * el.price_per_pax).reduce((a,b) => a+b, 0)}} &#8362;
+        </div>
+    </modalform>
+
     <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
     <div class="btn_cloture" v-if="!loading">
       <button type="button" class="mdl-button gen_fact_btn" v-on:click="genFacture()">
         Créer la facture de
         <br>{{total_price}} &#x20AA;
-        <br>pour {{global_fact_pax}} pax<br>
+        <br><span v-if="global_fact_pax != '?'">pour {{global_fact_pax}} pax<br></span>
       </button>
       <div class="ou" v-if="tobesent.voucher_num == tobesent_default.voucher_num">OU</div>
       <button type="button" class="mdl-button gen_fact_btn" v-on:click="setDonation()" v-if="tobesent.voucher_num == tobesent_default.voucher_num">
@@ -410,6 +452,7 @@ option.currency {
 
 <script>
 import filAriane from './components/filAriane.vue';
+import modalForm from './components/modalForm.vue';
 
 import moment from 'moment';
 
@@ -422,7 +465,8 @@ export default {
     }
   },
   components: {
-    'filariane': filAriane
+    'filariane': filAriane,
+    'modalform': modalForm
   },
   data: function() {
     let tobesent_default = {
@@ -439,6 +483,7 @@ export default {
 
     return {
       etape: '1',
+      prestas: [],
       cloture: {
         type: 'facture',
         fact_num: '',
@@ -480,8 +525,28 @@ export default {
     }
   },
   mounted: function() {
+    this.prestas_reset()
+  },
+  watch: {
+    dossier() {
+      this.prestas_reset()
+    }
   },
   methods: {
+    prestas_reset() {
+      this.prestas = JSON.parse(JSON.stringify(this.dossier.invoice))
+      for (let i = 0; i < this.prestas.length; i++) {
+        this.prestas[i].loading = false
+      }
+    },
+    get_forced_labels() {
+      let l = {}
+      for(let pr of this.prestas) {
+        let el = this.dossier.invoice.find(p => p.code == pr.code)
+        if(el && pr.label != el.label) l[pr.code] = pr.label
+      }
+      return l
+    },
     showToast(msg) {
       if (!msg) return;
       this.toast.msg = msg;
@@ -494,6 +559,15 @@ export default {
         if (this.tobesent.hasOwnProperty(o)) this.tobesent[o] = this.tobesent_default[o];
         if (this.check.hasOwnProperty(o)) this.check[o] = false;
       })
+    },
+    prestaChanged(code) { // tells if a presta has changed from original values
+      /* let orig_presta = this.dossier.invoice.find(el => el.code == code)
+      let new_presta = this.prestas[code]
+      return (orig_presta.pax != new_presta.pax
+              || orig_presta.price_per_pax != new_presta.price_per_pax) */
+    },
+    changePresta() {
+      console.log('change pr : ', this.prestas)
     },
     setDonation() {
       this.cloture.type = 'donation';
@@ -510,6 +584,11 @@ export default {
           args = "&"
         }
       })
+      // Here we add the forced labels
+      let forced_labels = this.get_forced_labels()
+      if (Object.getOwnPropertyNames(forced_labels).length) {
+        url = url + args + 'forced_labels=' + JSON.stringify(forced_labels)
+      }
       // if (args == "&") url = url.substr(0, url.length - 1);
       console.log("calling URL ", url);
 

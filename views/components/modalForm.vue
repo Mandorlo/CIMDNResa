@@ -4,10 +4,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   filter: blur(7px);
+  z-index: 100;
 }
 
 .mf_modal {
@@ -15,10 +16,12 @@
   top: 20vh;
   width: 86%;
   margin-left: 4%;
-  height: 30vh;
+  min-height: 30vh;
   background-color: white;
   color: #777;
   box-shadow: 0px 2px 2px black;
+  z-index: 101;
+  border-radius: 4px;
 }
 </style>
 
