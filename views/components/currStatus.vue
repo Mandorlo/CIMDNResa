@@ -7,22 +7,22 @@
   <table>
     <tr>
       <td></td>
-      <td v-for="attr in ['pax', 'resa', 'ca']"><b>{{labels[attr]}}</b></td>
+      <td v-for="attr in ['pax', 'resa', 'ca']" v-bind:key="attr"><b>{{labels[attr]}}</b></td>
     </tr>
     <tr>
       <td class="line_title">Valeur brute</td>
-      <td v-for="attr in ['pax', 'resa', 'ca']">{{yearStatus[attr].curryear|number}} <span v-if="attr=='ca'">&#8362;</span></td>
+      <td v-for="attr in ['pax', 'resa', 'ca']" v-bind:key="attr">{{yearStatus[attr].curryear|number}} <span v-if="attr=='ca'">&#8362;</span></td>
     </tr>
     <tr>
       <td class="line_title">{{thisyear-1}}</td>
-      <td v-for="attr in ['pax', 'resa', 'ca']">
+      <td v-for="attr in ['pax', 'resa', 'ca']" v-bind:key="attr">
         {{yearStatus[attr].lastyear|number}} <span v-if="attr=='ca'">&#8362;</span>
         (<span v-bind:class="{ alerte: yearStatus[attr].lastyear > yearStatus[attr].curryear, good:  yearStatus[attr].lastyear < yearStatus[attr].curryear}">{{(yearStatus[attr].curryear - yearStatus[attr].lastyear) * 100 / yearStatus[attr].lastyear|number}}%</span>)
       </td>
     </tr>
     <tr>
       <td class="line_title">Moyenne 3 dernières années</td>
-      <td v-for="attr in ['pax', 'resa', 'ca']">
+      <td v-for="attr in ['pax', 'resa', 'ca']" v-bind:key="attr">
         {{yearStatus[attr].moyyear|number}} <span v-if="attr=='ca'">&#8362;</span>
         (<span v-bind:class="{ alerte: yearStatus[attr].moyyear > yearStatus[attr].curryear, good: yearStatus[attr].moyyear < yearStatus[attr].curryear}">{{(yearStatus[attr].curryear - yearStatus[attr].moyyear) * 100 / yearStatus[attr].moyyear|number}}%</span>)
       </td>
@@ -169,15 +169,16 @@ export default {
       })
     },
     moyenne: function(mystats) {
-      // moyenne spéciale sur les 4 dernières années (année cournate excluse)
+      // moyenne spéciale sur les 4 dernières années (année courante excluse)
       let total = 0;
       let cumul = 0;
       mystats.forEach(e => {
-        if (!e || !e.x || !e.y) throw {
+        if (!e || !e.x) throw {
           'errnum': 'INVALID_PARAM',
           'fun': 'moyenne',
           'details': 'unknown element format in input param : ' + JSON.stringify(e)
         }
+        if (e.y === null || e.y === undefined) e.y = 0
         if (e.x > this.thisyear - 4 && e.x < this.thisyear) {
           total += e.y;
           cumul++

@@ -30,7 +30,8 @@ const TABLES = [{
     pax: '',
     pax_fact: 'Rp_effectif',
     prix_unit: 'Rp_prixmonnaie1',
-    comment: 'Rp_commentaireinterne'
+    comment: 'Rp_commentaireinterne',
+    montant: 'Rp_montant'
   }
 }]
 
@@ -120,7 +121,8 @@ async function updateResa(numresa, fields) {
     'pax_fact': 'number',
     'comment': 'string',
     'etat': 'number',
-    'prix_unit': 'number'
+    'prix_unit': 'number',
+    'montant': 'number'
   }
   let results = []
   numresa = resa.cleanDossierNum(numresa)
@@ -143,6 +145,7 @@ async function updateResa(numresa, fields) {
         }
       }
     }
+
     if (values.length) {
       let ifnumhisto = (table.fields.numhisto) ? ` AND ${table.fields.numhisto} = 0` : '';
       let query = `UPDATE ${table.name} SET ${values.join(', ')} WHERE ${table.fields.numresa} = '${numresa}'${ifnumhisto}`

@@ -11,6 +11,7 @@ const moment = require('moment')
 let clocks = []
 
 function run() {
+  console.log("Setup startup/cyclic tasks")
   // on exécute régulièrement une synchronisation avec le calndrier Google
   scheduleInterval(syncCal, {
     interval: {
@@ -25,6 +26,7 @@ function run() {
 
 // synchronisation du calendrier Google
 function syncCal() {
+  console.log("Starting Google Calendar Synchronization...")
   googleCalendar.sync()
     .then(r => {
       log.write('Google Calendar Sync Success', `All ${r.length} events synced with Google Calendar !`)

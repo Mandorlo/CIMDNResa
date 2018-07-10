@@ -12,6 +12,7 @@ const resa = require('../resa/resa.js')
 // * a string of final dirs
 // * a number representing the year we want
 async function factureExists(num_fact, fact_dir = null) {
+  console.log('starting facture exists...', num_fact, fact_dir)
   if (typeof num_fact != 'string') num_fact = numfact.toString()
   // on enlève le F devant si jamais il existe
   num_fact = cleanFactnum(num_fact)
@@ -28,7 +29,7 @@ async function factureExists(num_fact, fact_dir = null) {
     }
   }
   if (typeof fact_dir == 'string') {
-    if (!isNaN(parseInt(fact_dir))) fact_dir = parseInt(fact_dir);
+    if (!isNaN(parseInt(fact_dir))) fact_dir = [parseInt(fact_dir)];
     else fact_dir = [fact_dir];
   }
   if (typeof fact_dir == 'number' && fact_dir > 2010 && fact_dir < 3000) {
@@ -68,7 +69,7 @@ async function factureExists(num_fact, fact_dir = null) {
   }
 }
 
-// core function fore factureExistsDir
+// core function for factureExistsDir
 function factureExistsDir(fact_num, dir) {
   // @fact_num must be a string = the facture number without the 'F'
   // dir must be a valid final directory

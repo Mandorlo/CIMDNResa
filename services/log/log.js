@@ -3,11 +3,17 @@
 const fs = require('fs')
 const path = require('path')
 const LOG_PATH = path.join(__dirname, './log.txt')
+const DEBUG_DIR = path.join(__dirname, 'DEBUG')
 const moment = require('moment')
 const param = require('../param/param.js')
+const DEBUG_BOOL = true;
 
 let lock = false;
 let streamLog = null;
+
+function debug(filename, filedataJSON) {
+  if (DEBUG_BOOL) fs.writeFileSync(path.join(DEBUG_DIR, filename), JSON.stringify(filedataJSON, null, '\t'), 'utf8')
+}
 
 function write(type, title, data) {
   if (!lock) {
@@ -39,5 +45,6 @@ function write(type, title, data) {
 }
 
 module.exports = {
-  write: write
+  write,
+  debug
 }

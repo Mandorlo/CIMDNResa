@@ -5,6 +5,8 @@ This module will be called to
 - store it on the network disk
 The main function that does all this is 'genInvoice'
 */
+
+const LOG = require('./log/log.js');
 const dbfact = require('./db_invoices.js');
 const resa = require('./resa/resa.js');
 const files = require('./files/files.js');
@@ -14,7 +16,6 @@ const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
 const ejs2pdf = require('./pdf_renderer/ejs2pdf.js').ejs2pdf;
-// import ejs2pdf from './pdf_renderer/ejs2pdf.js'
 
 const default_frat_dir = GPARAM.network.default_frat_dir;
 const default_cimdn_dir = GPARAM.network.default_cimdn_dir;
@@ -66,8 +67,10 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
 
         dossier_raw['fact_num'] = fact_num_list[0]; // num facture normale (frat)
         dossier_raw['refact_num'] = fact_num_list[1]; // num refact
+        LOG.debug('1_invoicegen_dossier_raw.json', dossier_raw)
         try {
           var dossier = addInfoToDossier(dossier_raw, myopt);
+          LOG.debug('2_invoicegen_dossier_plus.json', dossier)
         } catch(e) {
           reject(e)
           return
@@ -81,6 +84,7 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
         try {
           var dossier_ready = parseDossierObj(dossier);
           if (myopt.debug === true) console.log("Dossier parsed : ", dossier_ready)
+          LOG.debug('3_invoicegen_dossier_parsed.json', dossier_ready)
         } catch (e) {
           reject(e)
         }
@@ -108,11 +112,13 @@ function genInvoice(dossiernum_or_obj, opt = {}) {
           // on modifie dossier avec uniquement les activités et prestations refacturables
           dossier['activities'] = activities_refac;
           dossier['invoice'] = modifyPricesRefac(prestas_refac); // ici on modifie aussi éventuellement le prix de certaines prestations
+          LOG.debug('4_invoicegen_refacdossier_raw.json', dossier)
 
           // on parse en mode refac
           try {
             var dossier_refac_ready = parseDossierObj(dossier);
             if (myopt.debug) console.log("Dossier parsed for refac : ", dossier_refac_ready)
+            LOG.debug('5_invoicegen_refacdossier_ready.json', dossier_refac_ready)
           } catch (err_parse_refac) {
             reject(err_parse_refac)
           }
@@ -284,6 +290,7 @@ function dateLang(date_s, lang) { // lang = 'fr' | 'en' | 'de' | ...
 
 // transforme un nombre comme 1234.567 en monétaire joli : "1 234.56"
 function int2MoneyString(nb) {
+  if (typeof nb != 'number') LOG.write('WARNING', `int2MoneyString WRONG_INPUT_PARAM`, `nb not of type number but of type ${typeof nb} : nb = ${nb}`)
   var n = Math.abs(nb);
   var partieEntiere = parseInt(n);
   var partieDecimale = Math.round((n - partieEntiere) * 100);
