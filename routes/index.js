@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
+const resa = require('../services/resa/resa.js')
 const updateResa = require('../services/resa/updateResa.js')
+const emitResa = require('../services/resa/emit_confirmation.js')
 const guides = require('../services/stats/guides.js')
 
 /* GET home page. */
@@ -63,11 +65,15 @@ function forceType(v, typ) {
   return v
 }
 
+addRoute(resa.getFutureResas, [])
+
 addRoute(updateResa.test, ['number', 'number', 'number'])
 addRoute(updateResa.closeResa, ['string', 'object'])
-addRoute(updateResa.updateResa, ['string', 'object'])
+addRoute(updateResa.updateResa, ['string', 'object', 'object'])
 
 addRoute(guides.get, ['string'])
 addRoute(guides.updateDB)
+
+addRoute(emitResa.genConfirmation, ['string', 'object'])
 
 module.exports = router;

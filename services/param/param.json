@@ -1,5 +1,6 @@
 {
   "logging": true,
+  "debug_dir": "../../DEBUG/",
   "downloads_dir": "../../public/downloads/",
   "resa": {
     "etat": {
@@ -31,6 +32,13 @@
       "irec_name": "VIA EMMAUS TOURS",
       "accountant": "accounts@viaemmaustours.com",
       "logo": "https://media.licdn.com/dms/image/C560BAQEQogoS2CJNow/company-logo_200_200/0?e=2124662400&v=beta&t=wsPRbELv-EQ2pVRvpaXVWwCvLLSsAZGigCFc2Q6vCmE"
+    },
+    {
+      "irec_id": "4",
+      "irec_name": "AMIEL TOURS",
+      "special_info": "Amiel (en tout le département Germany) n'accepte pas les factures envoyées par mail, il faut les envoyer par la poste (relou)",
+      "logo": "http://www.amiel.com/wp-content/themes/amiel/img/amiel_logo.png",
+      "accountant": "silvi@amiel.israel.net"
     },
     {
       "irec_id": "27",

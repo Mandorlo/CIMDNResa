@@ -27,6 +27,7 @@ const TABLES = [{
   fields: {
     numresa: 'Rp_coderesa',
     numhisto: 'Rp_numhisto',
+    codeprest: 'Rp_codeprest',
     pax: '',
     pax_fact: 'Rp_effectif',
     prix_unit: 'Rp_prixmonnaie1',
@@ -114,7 +115,10 @@ async function closeResaCore(numresa, opt) {
   let res = await updateResa(numresa, fields)
 }
 
-async function updateResa(numresa, fields) {
+async function updateResa(numresa, fields, opt) {
+  // si on ne veut changer le pax_fact ou le prix_unit que pour une certaine prestation utiliser cette option :
+  // opt.filter_presta = 'BIL100' ==> ajoute un champs dans la requête RPH : WHERE Rp_codeprest = 'BIL100'
+  if (!opt) opt = {}
   let types = {
     'label': 'string',
     'pax': 'number',
@@ -126,6 +130,24 @@ async function updateResa(numresa, fields) {
   }
   let results = []
   numresa = resa.cleanDossierNum(numresa)
+
+  // on ajoute l'update du montant si besoin
+  if (fields['prix_unit'] || fields['pax_fact']) {
+    // on récupère le prix_unit et pax_fact courants
+    let table = TABLES.find(el => el.id == 'RPH')
+    let res = await dbapi.query(`SELECT ${table.fields.pax_fact}, ${table.fields.prix_unit} FROM ${table.name} WHERE ${table.fields.numhisto} = 0 AND ${table.fields.numresa} = '${numresa}'`)
+    let old_prix_unit = res[0][table.fields.prix_unit]
+    let old_pax_fact = res[0][table.fields.pax_fact]
+
+    for (let table of TABLES) {
+      if (table.fields['montant']) {
+        let my_prix_unit = (fields['prix_unit']) ? fields['prix_unit'] : old_prix_unit;
+        let my_pax_fact = (fields['pax_fact']) ? fields['pax_fact'] : old_pax_fact;
+        let montant = Math.round(my_prix_unit * my_pax_fact)
+        fields['montant'] = montant
+      }
+    }
+  }
 
   for (let table of TABLES) {
     let values = []
@@ -147,8 +169,9 @@ async function updateResa(numresa, fields) {
     }
 
     if (values.length) {
-      let ifnumhisto = (table.fields.numhisto) ? ` AND ${table.fields.numhisto} = 0` : '';
-      let query = `UPDATE ${table.name} SET ${values.join(', ')} WHERE ${table.fields.numresa} = '${numresa}'${ifnumhisto}`
+      let ifnumhisto = (table.fields.numhisto) ? `AND ${table.fields.numhisto} = 0` : '';
+      let iffilterprest = (opt.filter_presta && table.id == 'RPH') ? `AND ${table.fields.codeprest} = '${opt.filter_presta}'` : '';
+      let query = `UPDATE ${table.name} SET ${values.join(', ')} WHERE ${table.fields.numresa} = '${numresa}' ${ifnumhisto} ${iffilterprest}`
       if (fields.simulation) console.log(query);
       else {
         let res = await dbapi.query(query, true)
@@ -169,10 +192,8 @@ module.exports = {
 
 // closeResa('TC02914*01', {facture:'18010', voucher: '123', refac: 'F 8018'}).then(r => console.log(r)).catch(e => console.log('ERROR', e))
 
-// updateResa('TC02914*01', {
-//   pax: 2,
-//   pax_fact: 1,
-//   // comment: '',
-//   comment: '@facture : F 18070\n@voucher: 2018-253\n@refac: F 8018',
-//   simulation: false
-// }).then(r => console.log(r)).catch(e => console.log('ERROR', e))
+/* updateResa('TC02985*01', {
+  pax: 28,
+  pax_fact: 28,
+  simulation: true
+}).then(r => console.log(r)).catch(e => console.log('ERROR', e)) */

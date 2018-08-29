@@ -6,3 +6,6 @@ public/downloads/*
 services/sync_calendar/tmp/*
 
 services/log/DEBUG/*
+
+.vscode/*
+DEBUG/*

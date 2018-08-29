@@ -1,5 +1,20 @@
+const moment = require('moment')
 const dbapi = require('../db.js')
+const dbInvoices = require('../db_invoices.js')
 
+async function getFutureResas() {
+  let query = dbapi.prepareQuery(dbInvoices.QUERY_INVOICE, {
+    etat: '2'
+  });
+  let model2 = Object.assign({}, dbInvoices.model);
+  model2['_filter'] = filterConfirmedResas;
+  return await dbapi.queryModel(query, model2);
+}
+
+function filterConfirmedResas(el) {
+  let m = moment(el['Rs_datedebut'], 'YYYYMMDD');
+  return m.isSameOrAfter(moment())
+}
 
 // nettoie le numéro de dossier fourni en entrée
 // e.g. '2548' => 'TC02548*01'
@@ -31,7 +46,8 @@ async function getState(num_dossier) {
 }
 
 module.exports = {
-  cleanDossierNum: cleanDossierNum,
-  dossierExists: dossierExists,
-  getState: getState
+  cleanDossierNum,
+  dossierExists,
+  getState,
+  getFutureResas
 }

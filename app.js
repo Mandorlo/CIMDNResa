@@ -62,7 +62,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/invoices', invoices);
 app.use('/stats', stats);
-app.use('/resas', resas);
+app.use('/reservations', resas);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

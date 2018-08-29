@@ -66,3 +66,31 @@ function threePad(i) {
   while (s.length < 3) s = '0' + s;
   return s
 }
+
+Array.prototype.splitBy = function(fn) {
+  let ids = []
+  let res = []
+  for (let i = 0; i < this.length; i++) {
+    let id = fn(this[i])
+    let n = ids.indexOf(id)
+    if (n > -1) {
+      res[n].push(this[i])
+    } else {
+      ids.push(id)
+      res.push([this[i]])
+    }
+  }
+  return res
+}
+
+Array.prototype.sortBy = function(fn) {
+  if (typeof fn == 'string') fn = (el) => el[fn];
+  return this.sort((a,b) => {
+    if (fn(a) < fn(b)) return -1;
+    return 1
+  })
+}
+
+Array.prototype.sum = function() {
+  return this.reduce((a,b) => a+b, 0)
+}

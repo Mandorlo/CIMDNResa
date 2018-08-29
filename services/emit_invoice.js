@@ -227,6 +227,7 @@ function parsePrestation(presta, agency_name) {
   else if (code == "BIL102") return "Route 2";
   else if (code == "BIL101") return "Route 1";
   else if (code == "VNZT") return "Visit of Nazareth";
+  else if (code == "LOCC1") return "Room C1 rental";
   else if (code == 'DON' && agency_name == "OPHIR-PELTOURS") return "Visit of Nazareth";
   else return code;
 }
@@ -269,6 +270,7 @@ function parseActivity(activity, agency_name) {
   else if (code == "C1" && theme == "002") return "Location C1";
   else if (code == "C1" && theme == "201") return "Conférence C1";
   else if (code == "AUD" && theme == "002") return "Location Auditorium";
+  else if (code == "AUD" && theme == "201") return "Conference";
   else if (code == "VNZT") return "Visit of Nazareth";
   else return "Visit of the center";
 }
@@ -443,7 +445,8 @@ function nextFactNum(mydir_list, annee = null) {
 
 
 module.exports = {
-  genInvoice: genInvoice
+  genInvoice,
+  parseDossierObj
 }
 
 // ===================================================================

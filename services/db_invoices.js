@@ -6,9 +6,10 @@ const DEBUG = true
 
 const curr_year = moment().format("YYYY");
 const last_year = (parseInt(curr_year) - 1).toString();
+const next_year = (parseInt(curr_year) + 1).toString();
 
-var QUERY_INVOICE = `SELECT
-              Rs_coderesa, Rs_operatcreation, Rs_libellereservation, Rs_datedebut, Rs_effectif, Rs_codelangue, Rs_commentaire, Rs_codeetat, Rs_nomliv, Rs_client,
+let QUERY_INVOICE = `SELECT
+              Rs_coderesa, Rs_operatcreation, Rs_libellereservation, Rs_datedebut, Rs_heurearrivee, Rs_effectif, Rs_codelangue, Rs_commentaire, Rs_codeetat, Rs_nomliv, Rs_client,
               Ed_libelle,
               Op_nom, Op_prenom,
               Co_code,
@@ -22,11 +23,11 @@ var QUERY_INVOICE = `SELECT
               AND Op_code = Rs_operatcreation
               AND Co_code = Rs_client
               AND Ed_code = Rs_codeetat AND Rs_codeetat = '@etat'
-              AND (Rs_datedebut LIKE '%${curr_year}%' OR Rs_datedebut LIKE '%${last_year}%')
+              AND (Rs_datedebut LIKE '%${curr_year}%' OR Rs_datedebut LIKE '%${next_year}%' OR Rs_datedebut LIKE '%${last_year}%')
             ORDER BY Rs_coderesa DESC`;
 
-var QUERY_SINGLE = `SELECT TOP 1
-              Rs_coderesa, Rs_operatcreation, Rs_libellereservation, Rs_datedebut, Rs_effectif, Rs_codelangue, Rs_commentaire, Rs_codeetat, Rs_nomliv, Rs_client,
+let QUERY_SINGLE = `SELECT TOP 1
+              Rs_coderesa, Rs_operatcreation, Rs_libellereservation, Rs_datedebut, Rs_heurearrivee, Rs_effectif, Rs_codelangue, Rs_commentaire, Rs_codeetat, Rs_nomliv, Rs_client,
               Rp_commentaireinterne, Rp_commentaireexterne,
               Ed_libelle,
               Op_nom, Op_prenom,
@@ -53,6 +54,7 @@ let model = {
   "id": "Rs_coderesa",
   "label": "Rs_libellereservation",
   "date": "Rs_datedebut", // type = string YYYYMMDD
+  "time": "Rs_heurearrivee",
   "pax": "Rs_effectif", // type = int
   "responsable": {
     "code": "Rs_operatcreation",
@@ -214,10 +216,12 @@ function addInfo(i) {
 }
 
 module.exports = {
+  QUERY_INVOICE,
   getInvoicesTBD: getInvoicesTBD,
   getInvoicesDone: getInvoicesDone,
   getDossier: getDossier,
-  isInvoiceObject: isInvoiceObject
+  isInvoiceObject: isInvoiceObject,
+  model
 }
 
 

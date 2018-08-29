@@ -222,7 +222,7 @@
 
   </div>
   <div class="tabs_container">
-    <div v-for="t of content_types" class="tab" v-bind:class="{active: content_type == t.id}" @click="content_type=t.id">{{t.label}}</div>
+    <div v-for="t of content_types" class="tab" v-bind:key="t.id" v-bind:class="{active: content_type == t.id}" @click="content_type=t.id">{{t.label}}</div>
   </div>
   <div class="content">
     <resadetails1 v-if="content_type == 'RESA'" :dossier="dossier"></resadetails1>
@@ -346,7 +346,7 @@ export default {
     },
     updateField: function(fields, field_name, field_label) {
       this[field_name].loading = true;
-      remoteCall('updateResa', [this.dossier.id, fields]).then(r => {
+      remoteCall('updateResa', [this.dossier.id, fields, {}]).then(r => { // le dernier field {} pourra être utilisé pour filtrer uniqmt certaines prestas du devis
         console.log(r)
         this[field_name].original = this[field_name].new
         this.showToast(`Le ${field_label} a été changé, merci Seigneur pour ta bonté !`)
