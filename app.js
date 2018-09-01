@@ -1,4 +1,5 @@
 var express = require('express');
+var session = require('express-session');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -9,7 +10,7 @@ var expressVue = require('express-vue');
 let startup = require('./services/startup.js');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
+var auth = require('./routes/auth.js');
 var invoices = require('./routes/invoices');
 var stats = require('./routes/stats');
 var resas = require('./routes/resas');
@@ -58,8 +59,32 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ============ USER SESSIONS & AUTH ==================
+// initialize express-session to allow us track the logged-in user across sessions.
+app.use(session({
+  key: 'user_sid',
+  secret: 'randomcocoriri',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+      expires: 600000
+  }
+}));
+
+// This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
+// This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
+app.use((req, res, next) => {
+  if (req.cookies.user_sid && !req.session.user) {
+      console.log("reinitializing user sessionId")
+      res.clearCookie('user_sid');        
+  }
+  next();
+});
+
+// =====================================================
+
 app.use('/', index);
-app.use('/users', users);
+app.use('/', auth);
 app.use('/invoices', invoices);
 app.use('/stats', stats);
 app.use('/reservations', resas);
@@ -79,7 +104,9 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
+  console.log('ERROR PAGE', JSON.stringify(err))
+  res.renderVue('pages/error')
 });
 
 

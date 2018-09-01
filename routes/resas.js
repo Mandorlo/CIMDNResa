@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router()
+let sessionChecker = require('../services/auth/auth.js').sessionChecker;
 
-// TODO this file is probably useless
-
-router.get('/', (req, res, next) => {
-  /* res.send({
-    'todo': 'todo'
-  }) */
+router.get('/', sessionChecker, (req, res, next) => {
   const data = {
     otherData: 'Something Else'
   };

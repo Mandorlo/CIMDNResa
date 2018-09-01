@@ -3,9 +3,10 @@ var router = express.Router();
 var dbfact = require('../services/db_invoices.js');
 var invoices = require('../services/emit_invoice.js');
 var path = require('path');
-const files = require('../services/files/files.js')
+const files = require('../services/files/files.js');
+let sessionChecker = require('../services/auth/auth.js').sessionChecker;
 
-router.get('/', (req, res, next) => {
+router.get('/', sessionChecker, (req, res, next) => {
   const data = {
     otherData: 'Something Else'
   };

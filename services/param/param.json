@@ -28,6 +28,12 @@
   },
   "agencies": [
     {
+      "irec_id": "1000000001",
+      "irec_name": "VERED HASHARON TOURS",
+      "accountant": "Tatiana@veredgo.com;rina@veredgo.com",
+      "logo": "https://www.veredgo.com/templates/protostar/images/logo.png"
+    },
+    {
       "irec_id": "237",
       "irec_name": "VIA EMMAUS TOURS",
       "accountant": "accounts@viaemmaustours.com",
@@ -36,7 +42,7 @@
     {
       "irec_id": "4",
       "irec_name": "AMIEL TOURS",
-      "special_info": "Amiel (en tout le département Germany) n'accepte pas les factures envoyées par mail, il faut les envoyer par la poste (relou)",
+      "special_info": "Amiel (en tout cas le département Germany) n'accepte pas les factures envoyées par mail, il faut les envoyer par la poste (relou)",
       "logo": "http://www.amiel.com/wp-content/themes/amiel/img/amiel_logo.png",
       "accountant": "silvi@amiel.israel.net"
     },

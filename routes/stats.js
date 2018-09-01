@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router()
 const stats = require('../services/stats/stats.js')
+let sessionChecker = require('../services/auth/auth.js').sessionChecker;
 
-router.get('/', (req, res, next) => {
+router.get('/', sessionChecker, (req, res, next) => {
   const data = {
     otherData: 'Something Else'
   }

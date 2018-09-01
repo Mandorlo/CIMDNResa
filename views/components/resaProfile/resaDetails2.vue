@@ -306,7 +306,7 @@ input.presta_label {
       Télécharge <span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les factures</span><span v-else>la facture</span> ci-dessous 
       et enregistre-<span v-if="pdf_paths[dossier.id] && pdf_paths[dossier.id].refact">les</span><span v-else>la</span> sur Com-Compta.
       Ensuite tu pourras envoyer le mail de facturation (avec le voucher)
-      <span v-if="dossier.agency.accountant">à <a :href="'mailto:' + dossier.agency.accountant">{{dossier.agency.accountant}}</a></span>.
+      <span v-if="dossier.agency.accountant">à <a :href="'mailto:' + dossier.agency.accountant.split(';')[0]">{{dossier.agency.accountant}}</a></span>.
       Seulement après cela, tu pourras clôturer le dossier.
     </div>
 

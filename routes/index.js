@@ -4,6 +4,7 @@ const resa = require('../services/resa/resa.js')
 const updateResa = require('../services/resa/updateResa.js')
 const emitResa = require('../services/resa/emit_confirmation.js')
 const guides = require('../services/stats/guides.js')
+let sessionChecker = require('../services/auth/auth.js').sessionChecker;
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -22,6 +23,18 @@ router.get('/', (req, res, next) => {
       meta: [
 
       ]
+    }
+  }
+  res.renderVue('main', data, vueOptions);
+});
+
+router.get('/home', (req, res, next) => {
+  const data = {
+    otherData: 'Something Else'
+  };
+  const vueOptions = {
+    head: {
+      title: 'CIMDN - Réservations'
     }
   }
   res.renderVue('main', data, vueOptions);

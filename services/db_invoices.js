@@ -98,14 +98,15 @@ let model = {
     "price": "Rp_montant" // type = int
   },
   "activities": {
-    "_query": `SELECT Res_codeespace, Res_date, Res_heure, Res_nbpers, Res_codetheme
+    "_query": `SELECT Res_codeespace, Res_date, Res_heure, Res_nbpers, Res_codetheme, Res_besinterne
               FROM ReservationEspace
               WHERE Res_numresa = '@Rs_coderesa'`,
     "pax": "Res_nbpers",
     "time": "Res_heure",
     "date": "Res_date",
     "espace": "Res_codeespace",
-    "theme": "Res_codetheme"
+    "theme": "Res_codetheme",
+    "comment": "Res_besinterne"
   }
 }
 

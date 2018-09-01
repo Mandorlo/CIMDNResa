@@ -235,7 +235,7 @@ function parsePrestation(presta, agency_name) {
 function parseActivities(dossier) {
   var activities = _.map(dossier['activities'], activity => {
     return {
-      name: parseActivity(activity, dossier.agency.name),
+      name: parseActivity(activity, dossier),
       pax: dossier.pax,
       date: moment(activity.date, 'YYYYMMDD').format('DD-MM-YYYY'),
       time: moment(activity.time, 'HHmm').format("HH:mm")
@@ -249,7 +249,13 @@ function parseActivities(dossier) {
   return _.uniqBy(activities, 'name')
 }
 
-function parseActivity(activity, agency_name) {
+function parseActivity(activity, dossier) {
+  let agency_name = dossier.agency.name;
+  
+  // si on a forcé un titre avec "@title(xxx)", on renvoie ça
+  let custom_title = /@title\(([^\)]+)\)/g.exec(activity.comment)
+  if (custom_title && custom_title.length > 1) return custom_title[1];
+
   // TODO all raw strings in the code like in this function, should be put in a config file !
   // on affiche un nom correct pour l'activité, et on ajoute "DISCARD" (au début!) si on ne veut pas l'afficher sur la facture
   var code = activity['espace'];

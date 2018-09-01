@@ -2,8 +2,29 @@ const moment = require('moment')
 const dbapi = require('../db.js')
 const dbInvoices = require('../db_invoices.js')
 
+const curr_year = moment().format("YYYY");
+const last_year = (parseInt(curr_year) - 1).toString();
+const next_year = (parseInt(curr_year) + 1).toString();
+
+let QUERY_RESA = `SELECT
+              Rs_coderesa, Rs_operatcreation, Rs_libellereservation, Rs_datedebut, Rs_heurearrivee, Rs_effectif, Rs_codelangue, Rs_commentaire, Rs_codeetat, Rs_nomliv, Rs_client,
+              Ed_libelle,
+              Op_nom, Op_prenom,
+              Co_code,
+                Co_nom, Co_prenom,
+                Co_raisonsocialefact, fk_paysfact, Co_villefact, Co_codepostalfact, Co_adresse1fact, Co_adresse2fact, Co_adresse3fact
+                Co_raisonsociale, fk_pays, Co_ville, Co_codepostal, Co_adresse1, Co_adresse2, Co_adresse3
+            FROM
+              Reservation, EtatDossier, Contact, Operateur
+            WHERE
+              Op_code = Rs_operatcreation
+              AND Co_code = Rs_client
+              AND Ed_code = Rs_codeetat AND Rs_codeetat = '@etat'
+              AND (Rs_datedebut LIKE '%${curr_year}%' OR Rs_datedebut LIKE '%${next_year}%' OR Rs_datedebut LIKE '%${last_year}%')
+            ORDER BY Rs_coderesa DESC`;
+
 async function getFutureResas() {
-  let query = dbapi.prepareQuery(dbInvoices.QUERY_INVOICE, {
+  let query = dbapi.prepareQuery(QUERY_RESA, {
     etat: '2'
   });
   let model2 = Object.assign({}, dbInvoices.model);
