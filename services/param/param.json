@@ -42,7 +42,7 @@
     {
       "irec_id": "4",
       "irec_name": "AMIEL TOURS",
-      "special_info": "Amiel (en tout cas le département Germany) n'accepte pas les factures envoyées par mail, il faut les envoyer par la poste (relou)",
+      "special_info": "Amiel (en tout cas le département Germany) n'accepte pas les factures envoyées par email, il faut les envoyer par la poste (relou)",
       "logo": "http://www.amiel.com/wp-content/themes/amiel/img/amiel_logo.png",
       "accountant": "silvi@amiel.israel.net"
     },
@@ -61,7 +61,7 @@
       "irec_id": "7",
       "irec_name": "GENESIS TOURS",
       "logo": "",
-      "special_info": "GENESIS veut qu'on envoie systématiquement le voucher avec la facture.",
+      "special_info": "GENESIS veut qu'on envoie systématiquement le voucher avec la facture (en général j'envoie un scan/photo du voucher).",
       "accountant": "rodrigo@genesis-tours.co.il"
     },
     {
@@ -101,5 +101,13 @@
       "irec_name": "TERRA SANCTA TESTCO",
       "logo": "http://www.terrasanctatours.com/wp-content/uploads/2016/05/logo3-300x123.png"
     }
-  ]
+  ],
+  "admin": {
+    "enable_auth": true,
+    "enable_signup": true,
+    "roles": ["admin", "user"],
+    "page_roles": {
+      "/admin": ["admin"]
+    }
+  }
 }

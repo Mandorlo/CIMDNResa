@@ -26,6 +26,16 @@ Array.prototype.sortBy = function(fn) {
   })
 }
 
-/* module.exports = {
-  sortBy: (arr, fn) => arr.sortBy(fn)
-} */
+// renvoie l'array intersection de @arr1 et @arr2
+function intersection(arr1, arr2) {
+  let res = []
+  for (let o of arr1) {
+    if (arr2.indexOf(o) > -1) res.push(o)
+  }
+  return res
+}
+
+module.exports = {
+  sortBy: (arr, fn) => arr.sortBy(fn),
+  intersection
+}

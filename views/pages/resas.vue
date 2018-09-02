@@ -1,15 +1,15 @@
 <template>
 <div class="root_resas">
-  <h3>Réservations</h3>
+    <navbar title="Réservations" v-bind:loggedin="true"></navbar>
+
   <div class="resa_table">
-    <!-- <div class="resa_table_header ligne">
-      <div class="first_col"></div><div>Header</div>
-    </div> -->
     <div v-for="resaGroup in resaList" :key="resaGroup[0].date">
+        
         <div class="resa_table_month ligne">
             <div>{{moment(resaGroup[0].date, 'YYYYMM').format('MMMM YYYY')}}</div>
             <div class="stats_month">{{resaGroup.length}} résa<span v-if="resaGroup.length > 1">s</span> {{resaGroup.map(r => r.invoice.map(i => i.price).sum()).sum()}} &#8362;</div>
         </div>
+
         <div v-for="resa in resaGroup" :key="resa.id" class="ligne resa_line">
             <div class="resa_id">
                 {{resa.id}}
@@ -21,13 +21,15 @@
                 {{resa.label}}
             </div>
             <div class="resa_confirm">
-                <i v-if="loading_conf != resa.id" class="fa fa-file-text-o" @click="genConfirmation(resa.id)"></i>
-                <i v-if="loading_conf == resa.id" class="fa fa-spinner fa-pulse"></i>
-                <a v-if="pdf_path[resa.id]" target="_blank" :href="pdf_path[resa.id]"><i class="fa fa-download"></i></a>
+                <i v-if="loading_conf != resa.id" class="fas fa-file-alt" @click="genConfirmation(resa.id)"></i>
+                <i v-if="loading_conf == resa.id" class="fas fa-spinner fa-pulse"></i>
+                <a v-if="pdf_path[resa.id]" target="_blank" :href="pdf_path[resa.id]"><i class="fas fa-download"></i></a>
             </div>
         </div>
+
     </div>
   </div>
+
 </div>
 </template>
 
@@ -43,15 +45,13 @@ a {
     text-align: right;
 }
 .resa_confirm > i {
-    background-color: #ddd;
-    border-radius: 100%;
     line-height: 23px;
     width: 23px;
     text-align: center;
     cursor: pointer;
 }
 .resa_confirm > i:hover {
-    background-color: #ccc;
+    color: var(--secondary-color);
 }
 
 .resa_id {
@@ -90,7 +90,7 @@ a {
     padding: 1rem;
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid #ddd;
 }
 
 .stats_month {
@@ -98,26 +98,31 @@ a {
     text-align: right;
 }
 
-@media screen and (min-width: 600px) {
+.resa_table {
+    box-shadow: var(--shadow-color) 0px 1px 3px;
+}
+
+@media screen and (min-width: 700px) {
   .resa_table {
-    width: 90%;
-    margin-left: 5%;
-    max-width: 700px;
+    width: 60vw;
+    margin-left: 20vw;
   }
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
   .resa_table {
     width: 100%;
     margin-left: 0;
   }
 }
 
-h3 {
-  margin-left: 5%;
+.root_resas {
+    margin-top: 15vh;
 }
 </style>
 
 <script>
+import Navbar from './components/navbar.vue';
+
 export default {
   name: "resas",
   data() {
@@ -126,6 +131,9 @@ export default {
         loading_conf: "",
         pdf_path: {}
     }
+  },
+  components: {
+      "navbar": Navbar
   },
   mounted: function() {
     getJSON('/RFC/getFutureResas').then(resas => {

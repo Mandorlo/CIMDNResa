@@ -1,17 +1,32 @@
 // load the things we need
 const fs = require('fs')
 const path = require('path')
+const PARAM = require('../param/param.js')
 const db = require('./auth.json')
-var bcrypt   = require('bcrypt-nodejs');
+var bcrypt   = require('bcrypt-nodejs')
 const uuid = require('uuid')
+const _ = require('../util/util.js')
 
 // middleware function to check for logged-in users
 function sessionChecker(req, res, next) {
     console.log('sessionChecker', req.session.user, req.cookies.user_sid)
-    if (req.session.user && req.cookies.user_sid) {
-        console.log('ok the user is connected : ', req.session.user, req.cookies.user_sid)
-        //res.redirect('/home');
-        next();
+    if (PARAM.admin && !PARAM.admin.enable_auth) {
+        console.log('ok authentication is deactivated, behaving as if user is connected')
+        next()
+    } else if ((req.session.user && req.cookies.user_sid)) {
+        if (PARAM.admin.page_roles[req.url]) {
+            console.log('ok the user is connected, checking roles for url ', req.url, req.session.email)
+            if (db[req.session.email] && db[req.session.email].roles && _.intersection(db[req.session.email].roles, PARAM.admin.page_roles[req.url]).length > 0) {
+                console.log(`ok user ${req.session.email} can go to page ${req.url}`)
+                next()
+            }  else {
+                console.log(`user ${req.session.email} has no right to go to page ${req.url}`)
+                res.redirect('/home')
+            }
+        } else {
+            console.log('ok user is connected')
+            next();
+        }
     } else {
         res.redirect('/login')
     }    

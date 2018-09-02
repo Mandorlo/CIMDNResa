@@ -1,11 +1,21 @@
+:root {
+  --main-bg-color: rgb(247,250,251); 
+  --secondary-color: rgb(247,250,251); 
+  --primary-color: rgb(53,104,127);
+  --dark-color: rgb(21, 60, 78);
+  --shadow-color: #819ca8;
+  --gray-color: #d8d8d8;
+}
+
 html {
-  background-color: #032a5f;
+  background-color: var(--main-bg-color);
 }
 
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color: #032a5f;
-  margin: 0px
+  font: 14px "Calibri", "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: var(--main-bg-color);
+  margin: 0px;
+  color: var(--primary-color);
 }
 
 /* @media screen and (min-width: 600px) {
@@ -17,6 +27,43 @@ h3 {
   color: white;
 }
 
-a {
-  color: #00B7FF;
+input {
+  height: 4vh;
+  padding-left: 3px;
+  border-radius: 4px;
+  box-shadow: none;
+  border: 1px solid #d8d8d8;
+}
+
+.btn_primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 1rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn_primary:hover {
+  background-color: var(--shadow-color);
+}
+.btn_primary:active {
+  background-color: var(--dark-color);
+  box-shadow: inset black 1px 1px 1px;
+}
+
+.ange {
+  position: fixed;
+  left: 1px;
+  top: 10vh;
+  height: 90vh;
+  z-index: 0;
+}
+
+.Marie {
+  position: fixed;
+  right: 1px;
+  top: 20vh;
+  height: 80vh;
+  z-index: 0;
 }

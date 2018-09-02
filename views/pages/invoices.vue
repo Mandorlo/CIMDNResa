@@ -1,5 +1,6 @@
 <template>
 <div class="root_invoices">
+  <navbar title="Factures" :loggedin="true"></navbar>
   <h3><span v-if="fact_tbd">{{fact_tbd.length}} </span>Facture<span v-if="fact_tbd && fact_tbd.length > 1">s</span> à émettre <span v-if="!fact_tbd">&nbsp;<i class="fa fa-spinner fa-pulse"></i></span></h3>
 
 
@@ -93,6 +94,7 @@ h3 {
 <script>
 import Reservation from './components/Reservation.vue';
 import resaProfile from './components/resaProfile/resaProfile.vue';
+import Navbar from './components/navbar.vue';
 
 export default {
   name: "invoices",
@@ -106,7 +108,8 @@ export default {
   },
   components: {
     "reservation": Reservation,
-    'resaprofile': resaProfile
+    'resaprofile': resaProfile,
+    'navbar': Navbar
   },
   methods: {
     showModalInvoice(dossier) {

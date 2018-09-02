@@ -14,8 +14,8 @@ let sessionChecker = require('../services/auth/auth.js').sessionChecker;
 // });
 
 router.get('/', (req, res, next) => {
-  const data = {
-    otherData: 'Something Else'
+  let data = {
+    loggedin: Boolean(req.session && req.cookies && req.session.user && req.cookies.user_sid)
   };
   const vueOptions = {
     head: {
@@ -29,8 +29,8 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/home', (req, res, next) => {
-  const data = {
-    otherData: 'Something Else'
+  let data = {
+    loggedin: Boolean(req.session && req.cookies && req.session.user && req.cookies.user_sid)
   };
   const vueOptions = {
     head: {
@@ -38,6 +38,10 @@ router.get('/home', (req, res, next) => {
     }
   }
   res.renderVue('main', data, vueOptions);
+});
+
+router.get('/admin', sessionChecker, (req, res, next) => {
+  res.renderVue('pages/admin');
 });
 
 // crée des routes automatiques pour la function fn

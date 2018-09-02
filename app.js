@@ -40,7 +40,8 @@ const vueOptions = {
           {script: '/javascripts/util.js'},
           {style: 'https://code.getmdl.io/1.3.0/material.indigo-pink.min.css'},
           {style: 'https://fonts.googleapis.com/icon?family=Material+Icons'},
-          {style: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'},
+          {style: "https://use.fontawesome.com/releases/v5.3.1/css/all.css"},
+          //{style: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'},
           {style: '/stylesheets/style.css'},
           {script: 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js'}
         ]
