@@ -237,7 +237,7 @@ function parseActivities(dossier) {
     return {
       name: parseActivity(activity, dossier),
       pax: dossier.pax,
-      date: moment(activity.date, 'YYYYMMDD').format('DD-MM-YYYY'),
+      date: moment(activity.date, 'YYYYMMDD').format('DD-MM-YY'),
       time: moment(activity.time, 'HHmm').format("HH:mm")
     }
   })

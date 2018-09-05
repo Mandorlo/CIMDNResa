@@ -55,7 +55,7 @@ async function closeResa(numresa, opt) {
   if (etat != param.resa.etat.CONFIRME) return {
     errnum: 'DOSSIER_NOT_READY',
     fun: 'service > updateResa > closeResa',
-    details: `le dossier n'est pas prêt à être fermé ou est déjà fermé (code etat = ${etat})`
+    details: `le dossier n'est pas prêt à être fermé ou est déjà fermé (code etat du dossier = ${etat})`
   }
 
   // == 1 == checks if facture and refac are stored in the network

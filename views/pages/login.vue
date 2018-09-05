@@ -12,8 +12,9 @@
             <label>Mot de passe</label>
             <input type="password" class="form-control" name="password">
         </div>
+        <input type="hidden" name="target" :value="target">
 
-        <button type="submit" class="btn_primary">{{formType}}</button>
+        <button type="submit" class="btn btn_primary">{{formType}}</button>
     </form>
 
     <hr>
@@ -51,7 +52,8 @@ export default {
   data() {
     return {
         formType: "Login",
-        enableSignup: true
+        enableSignup: true,
+        target: "" // là où rediriger le user après login
     }
   },
   computed: {

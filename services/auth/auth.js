@@ -25,10 +25,13 @@ function sessionChecker(req, res, next) {
             }
         } else {
             console.log('ok user is connected')
-            next();
+            next()
         }
     } else {
-        res.redirect('/login')
+        console.log("redirect url", req.originalUrl)
+        let targetUrl = req.originalUrl.substr(1)
+        if (targetUrl.indexOf('?') > -1) targetUrl = targetUrl.substr(0, targetUrl.indexOf('?'))
+        res.redirect('/login?target=' + targetUrl)
     }    
 };
 

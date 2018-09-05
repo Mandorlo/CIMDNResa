@@ -21,7 +21,8 @@
     </div>
   </div>
 
-  <img class="Marie" src="/images/Marie.png">
+  <img class="Marie" src="/images/Marie.png" @click="$refs.toast.show()">
+  <snackbar ref="toast"></snackbar>
 </div>
 </template>
 
@@ -64,16 +65,22 @@
 
 <script>
 import Navbar from './components/navbar.vue';
+import Snackbar from './components/snackbar.vue';
 
 export default {
   name: 'Main',
   data: function() {
     return {
-      loggedin: false
+      loggedin: false,
+      welcomeMsg: ""
     }
   },
+  mounted: function() {
+    if (this.welcomeMsg != '') this.$refs.toast.show(`Bienvenue à toi ${this.welcomeMsg} ! Grazie Signore !`);
+  },
   components: {
-    "navbar": Navbar
+    "navbar": Navbar,
+    "snackbar": Snackbar
   }
 }
 </script>

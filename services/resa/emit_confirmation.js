@@ -47,7 +47,7 @@ async function genConfirmation(dossier_num, opt) {
     let agency = dossier_obj_raw.agency.name.replace(/[\/\\\*\!\?\~\&\+\=\(\)\#\@]/g, "-")
     dossier_obj = emit_invoice.parseDossierObj(dossier_obj_raw)
     dossier_obj.responsable = `${dossier_obj.responsable.prenom} ${dossier_obj.responsable.nom}`
-    // on fixe l'heure de début éventuellement
+    // on corrige l'heure de début éventuellement
     if (dossier_obj.activities.length == 1) dossier_obj.activities[0].time = moment(dossier_obj_raw.time, "HHmm").format("HH:mm");
     if (DEBUG) fs.writeFileSync(path.join(GPARAM.debug_dir, "emit_confresa_dossier.json"), JSON.stringify(dossier_obj, null, '\t'), 'utf8')
 

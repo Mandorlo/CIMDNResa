@@ -8,7 +8,6 @@ let sessionChecker = auth.sessionChecker;
 if (PARAM.admin && PARAM.admin.enable_signup) {
     router.route('/signup')
     .get((req, res) => {
-        //res.sendFile(__dirname + '/views/signup.html');
         res.renderVue('pages/login', {formType: "Signup"})
     })
     .post((req, res) => {
@@ -20,7 +19,7 @@ if (PARAM.admin && PARAM.admin.enable_signup) {
             console.log("created user " + user.email)
             req.session.user = user.sessionId;
             req.session.email = user.email;
-            res.redirect('/home');
+            res.redirect('/home?welcome=' + user.email);
         })
         .catch(error => {
             console.log("ERROR in User.create : ", error)
@@ -35,32 +34,26 @@ router.route('/login')
     .get((req, res) => {
         let data = {enableSignup: true}
         if (PARAM.admin) data.enableSignup = PARAM.admin.enable_signup;
+        if (req.query.target) data.target = req.query.target;
         res.renderVue('pages/login', data)
     })
     .post((req, res) => {
         auth.findUser(req.body.email, req.body.password).then(function (user) {
-        if (!user) {
-            res.redirect('/login');
-        } else {
-            req.session.user = user.sessionId;
-            req.session.email = user.email;
-            res.redirect('/home');
-        }
-    }).catch(err => {
-        console.log("Error in User.find : ", err)
-        //res.redirect('/login')
-    })
+            if (!user) {
+                res.redirect('/login');
+            } else {
+                req.session.user = user.sessionId;
+                req.session.email = user.email;
+
+                let redirectUrl = '/home';
+                if (req.body.target != '') redirectUrl = '/' + req.body.target;
+                res.redirect(redirectUrl + '?welcome=' + user.email);
+            }
+        }).catch(err => {
+            console.log("Error in User.find : ", err)
+            //res.redirect('/login')
+        })
   });
-
-
-// route for user's dashboard
-/* router.get('/dashboard', (req, res) => {
-  if (req.session.user && req.cookies.user_sid) {
-      res.sendFile(__dirname + '/views/dashboard.html');
-  } else {
-      res.redirect('/login');
-  }
-}); */
 
 
 // route for user logout

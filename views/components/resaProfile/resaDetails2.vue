@@ -266,7 +266,7 @@ input.presta_label {
 
     <!-- Cloture : N° de voucher -->
     <div class="presta field_container" v-if="cloture.type != 'donation'">
-      <div class="icone"><i class="fa fa-calendar"></i></div>
+      <div class="icone"><i class="fas fa-calendar"></i></div>
       <div class="field_c2">
         <label class="field_label" for="cloture_voucher">N° de voucher</label>
         <input type="text" name="cloture_voucher" v-model="cloture.voucher_num">
@@ -275,7 +275,7 @@ input.presta_label {
 
     <!-- Cloture : N° de facture -->
     <div class="presta field_container" v-if="cloture.type != 'donation'">
-      <div class="icone"><i class="fa fa-calendar"></i></div>
+      <div class="icone"><i class="fas fa-calendar"></i></div>
       <div class="field_c2">
         <label class="field_label" for="cloture_fact">N° de facture</label>
         <input type="text" name="cloture_fact" v-model="cloture.fact_num">
@@ -284,7 +284,7 @@ input.presta_label {
 
     <!-- Cloture : N° de re-facturation éventuel -->
     <div class="presta field_container" v-if="cloture.type != 'donation'">
-      <div class="icone"><i class="fa fa-calendar"></i></div>
+      <div class="icone"><i class="fas fa-calendar"></i></div>
       <div class="field_c2">
         <label class="field_label" for="cloture_refact">N° de refacturation éventuel</label>
         <input type="text" name="cloture_refact" v-model="cloture.refact_num">
@@ -293,7 +293,7 @@ input.presta_label {
 
     <!-- <input v-if="cloture.type != 'donation'" type="text" name="cloture_fact" v-model="cloture.fact_num" placeholder="N° de facture"> -->
     <!-- <input v-if="cloture.type != 'donation'" type="text" name="cloture_refact" v-model="cloture.refact_num" placeholder="N° de refacturation éventuel"> -->
-    <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
+    <div class="gen_fact_spin" v-if="loading"><i class="fas fa-spinner fa-pulse"></i></div>
     <button v-if="!loading" type="button" class="mdl-button gen_fact_btn" v-on:click="closeDossier()">Clôturer le dossier {{dossier.id}}</button>
   </div>
 
@@ -313,12 +313,12 @@ input.presta_label {
     <div class="facture_links" v-if="pdf_paths[dossier.id] && !loading">
       <div class="facture_item" v-if="pdf_paths[dossier.id].fact">
         <a target="_blank" :href="pdf_paths[dossier.id].fact">
-          <i class="fa fa-download"></i><br><span>facture</span>
+          <i class="fas fa-download"></i><br><span>facture</span>
         </a>
       </div>
       <div class="facture_item" v-if="pdf_paths[dossier.id].refact && !loading">
         <a target="_blank" :href="pdf_paths[dossier.id].refact">
-          <i class="fa fa-download"></i><br><span>refact.</span>
+          <i class="fas fa-download"></i><br><span>refact.</span>
         </a>
       </div>
     </div>
@@ -332,7 +332,7 @@ input.presta_label {
   <!--                    ETAPE 1 : GÉNÉRER LA FACTURE                  -->
   <!-- ================================================================ -->
   <div class="etape" v-if="etape == '1'">
-    <div class="btn_showdetails" @click="$refs.InvoiceDetailsModal.show()"><i class="fa fa-eye"></i>&nbsp;Vérifier les détails</div>
+    <div class="btn_showdetails" @click="$refs.InvoiceDetailsModal.show()"><i class="fas fa-eye"></i>&nbsp;Vérifier les détails</div>
     <modalform ref="InvoiceDetailsModal">
         <div class="invoice_line" v-for="pr of prestas" :key="pr.code">
           <input class="presta_label" type="text" :name="pr.code" v-model="pr.label">
@@ -340,8 +340,8 @@ input.presta_label {
           <div>{{pr.pax}}</div>
           <div>{{pr.pax * pr.price_per_pax}} &#8362;</div>
           <div class="btn_change_presta" @click="changePresta" v-show="1!=1 || prestaChanged(pr.code)">
-            <i v-if="!pr.loading" class="fa fa-arrow-right"></i>
-            <i v-if="pr.loading" class="fa fa-spinner fa-pulse"></i>
+            <i v-if="!pr.loading" class="fas fa-arrow-right"></i>
+            <i v-if="pr.loading" class="fas fa-spinner fa-pulse"></i>
           </div>
         </div>
         <div class="invoice_line total">
@@ -349,7 +349,7 @@ input.presta_label {
         </div>
     </modalform>
 
-    <div class="gen_fact_spin" v-if="loading"><i class="fa fa-spinner fa-pulse"></i></div>
+    <div class="gen_fact_spin" v-if="loading"><i class="fas fa-spinner fa-pulse"></i></div>
     <div class="btn_cloture" v-if="!loading">
       <button type="button" class="mdl-button gen_fact_btn" v-on:click="genFacture()">
         Créer la facture de
@@ -364,7 +364,7 @@ input.presta_label {
 
     <!-- Numéro de voucher -->
     <div class="presta field_container">
-      <div class="icone"><i class="fa fa-file-text-o"></i></div>
+      <div class="icone"><i class="far fa-file-alt"></i></div>
       <div class="field_c2">
         <label class="field_label" for="voucher_num">Voucher N°</label>
         <input class="field_input" type="text" id="voucher_num" name="voucher_num" v-model="tobesent.voucher_num">
@@ -372,17 +372,17 @@ input.presta_label {
     </div>
 
     <div class="presta check_container" v-if="!check.advanced">
-      <div class="icone" @click="check.advanced = true"><i class="fa fa-square"></i></div>
+      <div class="icone" @click="check.advanced = true"><i class="fas fa-square"></i></div>
       <div class="check_label">Afficher les options avancées</div>
     </div>
     <div class="advanced_container" v-if="check.advanced">
       <!-- Ajouter le montant dans une autre devise -->
       <div class="presta check_container" v-if="!check.other_currency">
-        <div class="icone" @click="check.other_currency = true"><i class="fa fa-square"></i></div>
+        <div class="icone" @click="check.other_currency = true"><i class="fas fa-square"></i></div>
         <div class="check_label">Ajouter le montant dans une devise autre que le NIS</div>
       </div>
       <div class="presta field_container" v-if="check.other_currency">
-        <div class="icone" @click="resetOption(['other_currency', 'amount_currency'])"><i class="fa" :class="{'fa-euro': tobesent.other_currency == '€' || tobesent.other_currency == ''}"></i></div>
+        <div class="icone" @click="resetOption(['other_currency', 'amount_currency'])"><i class="fas" :class="{'fa-euro': tobesent.other_currency == '€' || tobesent.other_currency == ''}"></i></div>
         <div class="field_c2">
           <label class="field_label" for="amount_currency">Montant en {{tobesent.other_currency || "(choisir la devise)"}}</label>
           <input class="field_input" type="number" id="amount_currency" name="amount_currency" v-model="tobesent.amount_currency" :disabled="tobesent.other_currency == ''">
@@ -401,11 +401,11 @@ input.presta_label {
 
       <!-- Changer le compte bancaire -->
       <div class="presta check_container" v-if="!check.bank_account">
-        <div class="icone" @click="check.bank_account = true"><i class="fa fa-square"></i></div>
+        <div class="icone" @click="check.bank_account = true"><i class="fas fa-square"></i></div>
         <div class="check_label">Changer le compte bancaire de facturation (Mercantile par défaut)</div>
       </div>
       <div class="presta field_container" v-if="check.bank_account">
-        <div class="icone" @click="resetOption('bank_account')"><i class="fa fa-calendar"></i></div>
+        <div class="icone" @click="resetOption('bank_account')"><i class="fas fa-calendar"></i></div>
         <div class="field_c2">
           <label class="field_label" for="bank_account">Changer le compte bancaire de facturation</label>
           <select class="bank" v-model="tobesent.bank_account">
@@ -417,11 +417,11 @@ input.presta_label {
 
       <!-- Forcer numéro de facture -->
       <div class="presta check_container" v-if="!check.fact_num">
-        <div class="icone" @click="check.fact_num = true"><i class="fa fa-square"></i></div>
+        <div class="icone" @click="check.fact_num = true"><i class="fas fa-square"></i></div>
         <div class="check_label">Forcer le numéro de facture</div>
       </div>
       <div class="presta field_container" v-if="check.fact_num">
-        <div class="icone" @click="resetOption('fact_num')"><i class="fa fa-calendar"></i></div>
+        <div class="icone" @click="resetOption('fact_num')"><i class="fas fa-calendar"></i></div>
         <div class="field_c2">
           <label class="field_label" for="fact_num">Forcer le numéro de facture</label>
           <input class="field_input" type="text" id="fact_num" name="fact_num" pattern="F\s[0-9]+" v-model="tobesent.fact_num">
@@ -431,11 +431,11 @@ input.presta_label {
 
       <!-- Forcer numéro de re-facture -->
       <div class="presta check_container" v-if="!check.refact_num">
-        <div class="icone" @click="check.refact_num = true"><i class="fa fa-square"></i></div>
+        <div class="icone" @click="check.refact_num = true"><i class="fas fa-square"></i></div>
         <div class="check_label">Forcer le numéro de re-facturation</div>
       </div>
       <div class="presta field_container" v-if="check.refact_num">
-        <div class="icone" @click="resetOption('refact_num')"><i class="fa fa-calendar"></i></div>
+        <div class="icone" @click="resetOption('refact_num')"><i class="fas fa-calendar"></i></div>
         <div class="field_c2">
           <label class="field_label" for="refact_num">Forcer le numéro de re-facturation interne</label>
           <input class="field_input" type="text" id="refact_num" name="refact_num" pattern="F\s[0-9]+" v-model="tobesent.refact_num">

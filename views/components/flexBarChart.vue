@@ -1,17 +1,26 @@
 <template>
 <div class="root_flexbarchart">
-  <select v-model="xlabel">
-    <option v-for="choix in x_choices" :key="choix" :value="choix">{{choix}}</option>
-  </select>
-  <select v-model="ylabel">
-    <option v-for="choix in y_choices" :key="choix" :value="choix">{{choix}}</option>
-  </select>
-  <select v-model="filter_type">
-    <option v-for="choix in filter_choices" :key="choix" :value="choix">{{choix}}</option>
-  </select>
-  <select v-model="filter_val" v-if="filterval_choices">
-    <option v-for="choix in filterval_choices" :key="choix" :value="choix">{{choix}}</option>
-  </select>
+  <div class="flexbar_options">
+    <div class="flexbar_label">Abscisse</div>
+    <select v-model="xlabel">
+      <option v-for="choix in x_choices" :key="choix" :value="choix">{{choix}}</option>
+    </select>
+    <div class="flexbar_label">Ordonnée</div>
+    <select v-model="ylabel">
+      <option v-for="choix in y_choices" :key="choix" :value="choix">{{choix}}</option>
+    </select>
+
+    <div class="flexbar_right">
+      <div class="flexbar_label">Filtrer par</div>
+      <select v-model="filter_type">
+        <option v-for="choix in filter_choices" :key="choix" :value="choix">{{choix}}</option>
+      </select>
+      <div class="flexbar_label">Valeur filtre</div>
+      <select v-model="filter_val" v-if="filterval_choices">
+        <option v-for="choix in filterval_choices" :key="choix" :value="choix">{{choix}}</option>
+      </select>
+    </div>
+  </div>
   <canvas id="myChart" ref="myChart" width="300" height="100"></canvas>
 </div>
 </template>
@@ -19,6 +28,22 @@
 <style>
 .root_flexbarchart {
   padding: 10px
+}
+
+.flexbar_options {
+  display: flex;
+}
+
+.flexbar_right {
+  justify-self: flex-end;
+  display: flex;
+  justify-content: flex-end;
+  margin: auto;
+  margin-right: 0;
+}
+
+.flexbar_label {
+  margin: 0 4px;
 }
 </style>
 

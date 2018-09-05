@@ -103,8 +103,8 @@
     }
   ],
   "admin": {
-    "enable_auth": true,
-    "enable_signup": true,
+    "enable_auth": false,
+    "enable_signup": false,
     "roles": ["admin", "user"],
     "page_roles": {
       "/admin": ["admin"]

@@ -24,6 +24,7 @@ router.get('/', sessionChecker, (req, res, next) => {
       // ]
     }
   }
+  if (req.query.welcome) data.welcomeMsg = req.query.welcome;
   res.renderVue('pages/invoices', data, vueOptions);
 });
 

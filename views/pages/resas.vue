@@ -2,7 +2,7 @@
 <div class="root_resas">
     <navbar title="Réservations" v-bind:loggedin="true"></navbar>
 
-  <div class="resa_table">
+  <div class="table">
     <div v-for="resaGroup in resaList" :key="resaGroup[0].date">
         
         <div class="resa_table_month ligne">
@@ -28,6 +28,7 @@
         </div>
 
     </div>
+    <snackbar ref="toast"></snackbar>
   </div>
 
 </div>
@@ -75,6 +76,8 @@ a {
     font-variant: small-caps;
     background-color: #ddd;
     font-weight: bold;
+    position: sticky;
+    top: 10vh;
 }
 
 .resa_table_header {
@@ -86,33 +89,9 @@ a {
     width: 10%;
 }
 
-.ligne {
-    padding: 1rem;
-    display: flex;
-    flex-direction: row;
-    border-bottom: 1px solid #ddd;
-}
-
 .stats_month {
     flex-grow: 2;
     text-align: right;
-}
-
-.resa_table {
-    box-shadow: var(--shadow-color) 0px 1px 3px;
-}
-
-@media screen and (min-width: 700px) {
-  .resa_table {
-    width: 60vw;
-    margin-left: 20vw;
-  }
-}
-@media screen and (max-width: 700px) {
-  .resa_table {
-    width: 100%;
-    margin-left: 0;
-  }
 }
 
 .root_resas {
@@ -122,20 +101,26 @@ a {
 
 <script>
 import Navbar from './components/navbar.vue';
+import Snackbar from './components/snackbar.vue';
 
 export default {
   name: "resas",
   data() {
     return {
         resaList: [],
-        loading_conf: "",
-        pdf_path: {}
+        loading_conf: '',
+        pdf_path: {},
+        welcomeMsg: ''
     }
   },
   components: {
-      "navbar": Navbar
+      "navbar": Navbar,
+      'snackbar': Snackbar
   },
   mounted: function() {
+    // on affiche éventuellement un message de bienvenue
+    if (this.welcomeMsg != '') this.$refs.toast.show(`Bienvenue à toi ${this.welcomeMsg} ! Grazie Signore !`);
+
     getJSON('/RFC/getFutureResas').then(resas => {
         console.log(resas)
         this.resaList = resas.sortBy(el => el.date)

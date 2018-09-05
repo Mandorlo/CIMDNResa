@@ -94,3 +94,34 @@ Array.prototype.sortBy = function(fn) {
 Array.prototype.sum = function() {
   return this.reduce((a,b) => a+b, 0)
 }
+
+// renvoie la différence (au sens d'ensembles) o2 - o1
+// càd renvoie un objet avec les paires key/val de o2 qui ne sont pas dans o1
+// si strict = true on compare key et val, sinon on ne compare que la présence de key dans o1
+function objDiff(o2, o1, strict = true) {
+  let o = {}
+  for (let attr in o2) {
+    if (o1[attr] != o2[attr] || (!strict && !o1.hasOwnProperty(attr))) {
+      o[attr] = o2[attr]
+    }
+  }
+  return o
+}
+
+// joinObj({a:1,b:2}, '&', '=') = "a=1&b=2"
+function joinObj(o, sep_attr = '&', sep_val = '=') {
+  let arr = []
+  for (let attr in o) {
+    arr.push(attr + sep_val + o[attr])
+  }
+  return arr.join(sep_attr)
+}
+
+function range(nb_el, el_val = null) {
+  let res = []
+  for (let i = 0; i < nb_el; i++) {
+    if (el_val === null) el_val = i;
+    res.push(el_val)
+  }
+  return res
+}

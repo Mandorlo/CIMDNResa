@@ -5,6 +5,11 @@
   --dark-color: rgb(21, 60, 78);
   --shadow-color: #819ca8;
   --gray-color: #d8d8d8;
+  --error-color: #d50000;
+  --error-light-color: #ffecec;
+  --gray-color: #777;
+  --gray-light-color: #ddd;
+  --action-color: rgb(237,125,49);
 }
 
 html {
@@ -18,31 +23,36 @@ body {
   color: var(--primary-color);
 }
 
-/* @media screen and (min-width: 600px) {
-  body {
-  }
-} */
-
-h3 {
-  color: white;
-}
-
 input {
-  height: 4vh;
+  height: 24px;
+  width: 170px;
   padding-left: 3px;
   border-radius: 4px;
   box-shadow: none;
-  border: 1px solid #d8d8d8;
+  border: 1px solid var(--gray-light-color);
 }
 
-.btn_primary {
-  background-color: var(--primary-color);
-  color: white;
+select {
+  height: 28px;
+  width: 175px;
+  padding-left: 3px;
+  border-radius: 4px;
+  box-shadow: none;
+  border: 1px solid var(--gray-light-color);
+  cursor: pointer;
+}
+
+.btn {
   border: none;
   padding: 0.5rem 1rem;
   margin: 1rem 1rem;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.btn_primary {
+  background-color: var(--primary-color);
+  color: white;
 }
 .btn_primary:hover {
   background-color: var(--shadow-color);
@@ -50,6 +60,17 @@ input {
 .btn_primary:active {
   background-color: var(--dark-color);
   box-shadow: inset black 1px 1px 1px;
+}
+
+.btn_action {
+  background-color: var(--action-color);
+  color: white;
+}
+
+.btn_disabled {
+  background-color: var(--gray-light-color);
+  color: #ccc;
+  cursor: default;
 }
 
 .ange {
@@ -66,4 +87,61 @@ input {
   top: 20vh;
   height: 80vh;
   z-index: 0;
+}
+
+.error {
+  background-color: var(--error-light-color);
+  border: 1px solid var(--error-color);
+  padding: 1rem;
+  color: var(--error-color);
+  font-family: monospace;
+  border-radius: 7px;
+  text-align: center;
+  box-shadow: var(--shadow-color) 0px 1px 3px;
+}
+
+.info {
+  color: var(--primary-color);
+  background-color: #f7fcfe;
+  border: 1px solid #35687f;
+  border-radius: 7px;
+  padding: 0.5rem;
+  margin: 0 0.5rem;
+  text-align: center;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+
+/* ===================== TABLES ======================== */
+.table {
+  box-shadow: var(--shadow-color) 0px 1px 3px;
+}
+
+@media screen and (min-width: 700px) {
+  .table {
+    width: 60vw;
+    margin-left: 20vw;
+  }
+}
+@media screen and (max-width: 700px) {
+  .table {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.ligne {
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #ddd;
+  background-color: white;
+}
+
+
+/* ========= USEFUL CLASSES ============= */
+
+.flexRow {
+  display: flex
 }

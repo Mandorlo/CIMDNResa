@@ -37,6 +37,7 @@ router.get('/home', (req, res, next) => {
       title: 'CIMDN - Réservations'
     }
   }
+  if (req.query.welcome) data.welcomeMsg = req.query.welcome;
   res.renderVue('main', data, vueOptions);
 });
 

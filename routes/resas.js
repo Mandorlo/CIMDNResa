@@ -11,6 +11,7 @@ router.get('/', sessionChecker, (req, res, next) => {
       title: 'CIMDN Réservations'
     }
   }
+  if (req.query.welcome) data.welcomeMsg = req.query.welcome;
   res.renderVue('pages/resas', data, vueOptions);
 });
 
