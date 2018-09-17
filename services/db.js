@@ -1,7 +1,4 @@
 const sql = require('mssql');
-const fs = require('fs');
-const moment = require('moment');
-const _ = require('lodash');
 
 const config = {
   user: 'IRECUSER',
@@ -143,6 +140,7 @@ function getPool() {
         resolve(mypool)
       }).catch(e => {
         lock = false
+        console.log("ERR1")
         reject(e)
       })
     } else {

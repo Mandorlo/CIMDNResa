@@ -19,6 +19,11 @@
       <i class="main_icon fas fa-chart-line"></i>
       <div class="main_label">Statistiques</div>
     </div>
+
+    <div class="main_opt" onclick="window.location='/liens';">
+      <i class="main_icon fas fa-link"></i>
+      <div class="main_label">Liens utiles</div>
+    </div>
   </div>
 
   <img class="Marie" src="/images/Marie.png" @click="$refs.toast.show()">

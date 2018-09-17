@@ -2,6 +2,8 @@
 <div class="root_resas">
     <navbar title="Réservations" v-bind:loggedin="true"></navbar>
 
+    <div v-if="error_msg != ''" class="error resas_error">{{error_msg}}</div>
+
   <div class="table">
     <div v-for="resaGroup in resaList" :key="resaGroup[0].date">
         
@@ -35,6 +37,10 @@
 </template>
 
 <style>
+.resas_error {
+    width: 60vw;
+    margin-left: 20vw;
+}
 a {
     color: black;
     margin-left: 10px;
@@ -110,7 +116,8 @@ export default {
         resaList: [],
         loading_conf: '',
         pdf_path: {},
-        welcomeMsg: ''
+        welcomeMsg: '',
+        error_msg: ''
     }
   },
   components: {
@@ -122,10 +129,14 @@ export default {
     if (this.welcomeMsg != '') this.$refs.toast.show(`Bienvenue à toi ${this.welcomeMsg} ! Grazie Signore !`);
 
     getJSON('/RFC/getFutureResas').then(resas => {
-        console.log(resas)
+        console.log('RESAS', resas)
+        if (resas.error) {
+            this.error_msg = `Une erreur est survenue lors de la récupération des réservations depuis la base de données. Vérifier la connexion à la base de données 10.70.20.10`;
+            return
+        }
         this.resaList = resas.sortBy(el => el.date)
         this.resaList = this.resaList.splitBy(el => moment(el.date, 'YYYYMMDD').format('YYYYMM'))
-    })
+    }).catch(err => console.log('ERROR in RFC/getFutureResas', err))
   },
   methods: {
       genConfirmation(dossier_id) {

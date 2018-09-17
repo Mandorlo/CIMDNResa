@@ -77,6 +77,7 @@ router.get('/gen/:dossier', (req, res, next) => {
     } else opt[k] = req.query[k];
   })
 
+  console.log('GEN INVOICE', opt)
   invoices.genInvoice(dossier_num, opt)
     .then(pdf_paths => res.send(pdf_paths)) // an object with attributes 'fact' and 'refact' (if refac is needed)
     .catch(e => res.send({

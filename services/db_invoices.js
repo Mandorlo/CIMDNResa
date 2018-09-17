@@ -180,7 +180,7 @@ function getInvoicesDone() {
     });
     dbapi.queryModel(query, model).then(r => {
       // dbapi.close();
-      resolve(r)
+      resolve(r.map(i => addInfo(i)))
     }).catch(e => {
       if (DEBUG) console.log("Error in getInvoicesDone: ", e);
       reject(e)
@@ -197,7 +197,7 @@ function getDossier(dossier_num) {
     });
     dbapi.queryModel(query, model).then(r => {
       // dbapi.close();
-      if (r && r.length) resolve(r[0]);
+      if (r && r.length) resolve(addInfo(r[0]));
       else reject("No results to getDossier (for Invoices) N° " + dossier_num)
     }).catch(e => {
       if (DEBUG) console.log("Error in getDossier (for Invoices): ", e);
@@ -209,11 +209,48 @@ function getDossier(dossier_num) {
 // i is an invoice object (as retrieved in getInvoicesTBD)
 // it adds additional info about for example the agency, from the PARAM
 function addInfo(i) {
+  // on ajoute les infos de l'agence
   let agency_param = PARAM.agencies.filter(a => a.irec_name == i.agency.name)
   if (agency_param && agency_param.length) {
     i.agency = Object.assign(i.agency, agency_param[0])
   }
+  // on parse les activités
+  for (let k = 0; k < i.activities.length; k++) {
+    i.activities[k].label = parseActivity(i.activities[k], i)
+  }
   return i
+}
+
+function parseActivity(activity, dossier) {
+  let agency_name = dossier.agency.name;
+  
+  // si on a forcé un titre avec "@title(xxx)", on renvoie ça
+  let custom_title = /@title\(([^\)]+)\)/g.exec(activity.comment)
+  if (custom_title && custom_title.length > 1) return custom_title[1];
+
+  // TODO all raw strings in the code like in this function, should be put in a config file !
+  // on affiche un nom correct pour l'activité, et on ajoute "DISCARD" (au début!) si on ne veut pas l'afficher sur la facture
+  var code = activity['espace'];
+  var theme = activity['theme'];
+  if (code == "CAF" && /(302|303)/gi.test(theme)) {
+    if (moment(activity.time, 'HHmm').isBefore(moment("1630", 'HHmm'))) return "Lunch";
+    else return "Dinner";
+  } else if (code == "CAF" && theme == "301") return "DISCARD Breakfast";
+  else if (code == "CAF" && theme == "304") return "DISCARD Coffee pause";
+  else if (code == "AUD" && theme == "002") return "Room rental";
+  else if (code == "JAR") return "DISCARD Visit of the gardens";
+  else if (code == "CHA" && theme == "102") return "Holy Mass in the Chapel";
+  else if (code == "FOU" && theme == "001") return "DISCARD Visit excavation";
+  else if (code == "CHA" && /(101|103)/gi.test(theme)) return "DISCARD Visit of the Chapel and gardens";
+  else if (code == "SMM" && /(401|402|410|408)/gi.test(theme)) return "Visit Multimedia Show";
+  else if (code == "MDN" && theme == "001" && agency_name == "OPHIR-PELTOURS") return "Visit of Nazareth";
+  else if (code == "MDN" && theme == "001") return "Visit of the center";
+  else if (code == "C1" && theme == "002") return "Location C1";
+  else if (code == "C1" && theme == "201") return "Conférence C1";
+  else if (code == "AUD" && theme == "002") return "Location Auditorium";
+  else if (code == "AUD" && theme == "201") return "Conference";
+  else if (code == "VNZT") return "Visit of Nazareth";
+  else return "Visit of the center";
 }
 
 module.exports = {

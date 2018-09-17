@@ -6,13 +6,31 @@
 
   <div class="table">
     <div class="ligne ligne_fact" v-for="resa in fact_tbd" :key="resa.id" @click="showModalInvoice(resa)">
-      {{resa.id}}
+      <div style="color:gray">
+        {{moment(resa.date, 'YYYYMMDD').format('D MMM')}}<br>
+        {{resa.id}}
+      </div>
+      <div style="font-weight:bold;">
+        {{resa.agency.name}}
+      </div>
+      <div>{{resa.label}}</div>
     </div>
   </div>
 
   <modal ref="modalFact" v-on:closed="resetInvoiceGen()">
     <div v-if="dossier.id">
-      <h3>{{dossier.label}}</h3>
+      <!-- LABEL DU DOSSIER -->
+      <div class="flexRow">
+        <input class="h3" name="resa_label" v-model="resa.label" v-on:keyup.enter="resaChangeLabel">
+        <div class="btn_change_label" @click="resaChangeLabel" v-show="resa.label != dossier.label">
+          <i v-if="!resa.loading.label" class="fa fa-arrow-right"></i>
+          <i v-if="resa.loading.label" class="fa fa-spinner fa-pulse"></i>
+        </div>
+      </div>
+
+      <div class="agencyname">
+        {{moment(dossier.date, 'YYYYMMDD').format('dddd D MMMM YYYY')}}<br>{{dossier.agency.name}}
+      </div>
       <hr>
       <stepscontainer v-model="invoiceGen.curr_step">
 
@@ -26,7 +44,7 @@
                 <div class="title_underline">Activités</div>
                 <ul>
                   <li v-for="act in dossier.activities" :key="act.date+act.espace+act.theme">
-                    {{act.espace + '-' + act.theme}} ({{act.pax}} pax)
+                    {{act.label.replace('DISCARD ', '')}} ({{act.pax}} pax)
                   </li>
                 </ul>
               </div>
@@ -87,19 +105,20 @@
                 <template slot="reveal">
                   <input3 label="Compte bancaire de facturation" icon="fa-university">
                     <select v-model="invoiceGen.options.bank_account">
-                      <option value="mercantile">Mercantile</option>
-                      <option value="paxbank">Pax-Bank</option>
+                      <option value="mercantile">Mercantile (en NIS Israël)</option>
+                      <option value="paxbank">Pax-Bank (en €)</option>
                     </select>
                   </input3>
                 </template>
               </checkreveal>
               <div class="info inv_info" v-if="dossier.agency && dossier.agency.RULES && dossier.agency.RULES.bank_account">Pour cette agence, il vaut mieux utiliser le compte bancaire {{dossier.agency.RULES.bank_account}}</div>
+              <div class="info inv_info" v-if="invoiceGen.options.amount_currency">Pour les facturations dans une autre devise que le NIS, tu peux spécifier le compte bancaire Pax-Bank sur la facture, plutôt que Mercantile</div>
               <!-- OPTION forcer numéro facture -->
               <checkreveal ref="CR_force_factnum">
                 <template slot="info">Forcer le numéro de la facture</template>
                 <template slot="reveal">
                   <input3 label="Forcer le N° de facture" icon="fa-file-invoice">
-                    <input name="force_factnum" v-model="invoiceGen.options.force_factnum" type="text" pattern="F\s[0-9]+">
+                    <input name="fact_num" v-model="invoiceGen.options.fact_num" type="text" pattern="F\s[0-9]+">
                   </input3>
                 </template>
               </checkreveal>
@@ -108,7 +127,7 @@
                 <template slot="info">Forcer le numéro de la re-facture</template>
                 <template slot="reveal">
                   <input3 label="Forcer le N° de re-facture" icon="fa-file-invoice">
-                    <input name="force_refactnum" v-model="invoiceGen.options.force_refactnum" type="text" pattern="F\s[0-9]+">
+                    <input name="refact_num" v-model="invoiceGen.options.refact_num" type="text" pattern="F\s[0-9]+">
                   </input3>
                 </template>
               </checkreveal>
@@ -135,13 +154,13 @@
             <span v-if="invoiceGen.type_cloture == 'donation'">Donation, clôturer le dossier</span>
           </h3>
           <div class="content_step">
-            <div v-if="invoiceGen.type_cloture == ''">Cette étape n'est pas encore accessible, il faut passer par les étapes 1 et/ou 2 d'abord :)</div>
+            <div v-if="invoiceGen.type_cloture == '' || (invoiceGen.type_cloture == 'facture' && !invoiceGen.paths[dossier.id])">Cette étape n'est pas encore accessible, il faut passer par les étapes 1 et/ou 2 d'abord :)</div>
             <!-- SI donation -->
             <div class="cloture_donation" v-if="invoiceGen.type_cloture == 'donation'">
               Le groupe est venu et a payé dans les dons. Aucune facture ne sera émise et le dossier sera clôturé.
             </div>
             <!-- SI facture -->
-            <div v-if="invoiceGen.type_cloture == 'facture'">
+            <div v-if="invoiceGen.type_cloture == 'facture' && invoiceGen.paths[dossier.id]">
               <div class="info" v-if="dossier.agency && dossier.agency.special_info">{{dossier.agency.special_info}}</div>
 
               <div class="information">
@@ -156,12 +175,12 @@
               <div class="facture_links" v-if="invoiceGen.paths[dossier.id] && !invoiceGen.loading">
                 <div class="facture_item" v-if="invoiceGen.paths[dossier.id].fact">
                   <a target="_blank" :href="invoiceGen.paths[dossier.id].fact">
-                    <i class="fas fa-download"></i><br><span>facture</span>
+                    <i class="fas fa-download"></i><br><span>facture<br>{{cloture.fact_num}}</span>
                   </a>
                 </div>
                 <div class="facture_item" v-if="invoiceGen.paths[dossier.id].refact && !invoiceGen.loading">
                   <a target="_blank" :href="invoiceGen.paths[dossier.id].refact">
-                    <i class="fas fa-download"></i><br><span>refact.</span>
+                    <i class="fas fa-download"></i><br><span>refact.<br>{{cloture.refact_num}}</span>
                   </a>
                 </div>
               </div>
@@ -169,7 +188,7 @@
             </div>
           </div>
           <div class="action_step">
-            <button class="btn btn_action">C'est bon, clôturer le dossier</button>
+            <button class="btn btn_action" @click="closeDossier">C'est bon, clôturer le dossier</button>
           </div>
         </template>
       </stepscontainer>
@@ -181,6 +200,27 @@
 </template>
 
 <style>
+.btn_change_label {
+  cursor: pointer;
+}
+
+.h3 {
+  font-size: 3rem;
+  height: 3rem;
+  border: none;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  width: auto;
+}
+
+.agencyname {
+  color: var(--gray-color);
+}
+
+.ligne_fact > div {
+  margin-left:1rem;
+}
+
 .information {
   font-family: monospace;
   font-size: 0.8rem;
@@ -307,8 +347,15 @@ export default {
       amount_currency: 0, // montant dans un autre devise
       other_currency: '', // autre devise (€ ou $)
       bank_account: 'mercantile', // compte bancaire de facturation
-      force_factnum: '', // le numéro de facture forcé
-      force_refactnum: '' // le numéro de re-facture forcé
+      fact_num: '', // le numéro de facture forcé
+      refact_num: '' // le numéro de re-facture forcé
+    }
+
+    let default_resa = {
+      label: '',
+      loading: {
+        label: false
+      }
     }
 
     return {
@@ -317,6 +364,9 @@ export default {
 
       welcomeMsg: '',
       error_msg: '',
+
+      // pour updater le dossier sur Irec
+      resa: JSON.parse(JSON.stringify(default_resa)),
 
       default_fact_options,
 
@@ -354,6 +404,7 @@ export default {
   methods: {
     showModalInvoice(dossier) {
         this.dossier = dossier;
+        this.resa.label = dossier.label;
         console.log(this.dossier)
         this.$refs.modalFact.show()
     },
@@ -363,6 +414,31 @@ export default {
       this.invoiceGen.type_cloture = 'donation';
       this.invoiceGen.curr_step = 3;
     },
+    // =============================================================
+    //            UPDATE DOSSIER IREC BEFORE GEN INVOICE
+    // =============================================================
+    resaChangeLabel: function() {
+      let fields = {
+        label: this.resa.label
+      }
+      this.updateField(fields, 'label', 'nom du groupe')
+    },
+    updateField: function(fields, field_name, field_label) {
+      this.resa.loading[field_name] = true;
+      remoteCall('updateResa', [this.dossier.id, fields, {}]).then(r => { // le dernier field {} pourra être utilisé pour filtrer uniqmt certaines prestas du devis
+        console.log(r)
+        this.showToast(`Le ${field_label} a été changé, merci Seigneur pour ta bonté !`)
+        this.resa.loading[field_name] = false;
+        location.reload()
+      }).catch(e => {
+        console.log(`ERROR update ${field_name}`, e)
+        this.showToast(`Il y a une erreur lors de la mise à jour de ${field_label} :( Seigneur prends pitié de nous`)
+        this.resa.loading[field_name] = false;
+      })
+    },
+    // =============================================================
+    //            EMIT FACT
+    // =============================================================
     setEmitFact() {
       // à l'étape 1 - vérifier infos dossier
       // cette fonction est appelée en cliquant sur le bouton "Émettre une facture"
@@ -397,9 +473,9 @@ export default {
           this.cloture['refact_num'] = o.refact_num;
           console.log('cloture', this.cloture)
           this.cloture.voucher_num = this.invoiceGen.options.voucher_num;
+          this.invoiceGen.curr_step = 3;
         }
         this.invoiceGen.loading = false;
-        this.invoiceGen.curr_step = 3;
       }).catch(e => {
         console.log(e)
         this.showToast(JSON.stringify(e))
@@ -411,7 +487,7 @@ export default {
         facture: this.cloture.fact_num,
         refac: this.cloture.refact_num
       }
-      if (opt.facture == '' && this.cloture.type == 'donation') opt.facture = 'donation';
+      if (opt.facture == '' && this.invoiceGen.type_cloture == 'donation') opt.facture = 'donation';
       if (opt.facture == '') {
         this.showToast("Le mode de clôture n'a pas encore été choisi ! (facture ou donation)")
         return
@@ -420,10 +496,11 @@ export default {
       remoteCall('closeResa', [this.dossier.id, opt]).then(r => {
         console.log('closeResa => ', r);
         if (r !== true) this.showToast(JSON.stringify(r));
-        else {
-          this.showToast("Le dossier a été clôturé avec succès, que le nom du Seigneur soit béni !")
-        }
-      }).catch(e => console.log('ERR Remote Function Call', e))
+        else this.showToast("Le dossier a été clôturé avec succès, que le nom du Seigneur soit béni !");
+      }).catch(e => {
+        console.log('ERR Remote Function Call', e);
+        this.showToast(`ERREUR pendant la clôture du dossier : ${JSON.stringify(e)}`)
+      })
     },
     resetInvoiceGen() {
       // lorsqu'on ferme la fenêtre modale, on remet tout à zéro
@@ -432,7 +509,7 @@ export default {
         curr_step: 1, // étape courante (1, 2 ou 3)
         type_cloture: '', // 'donation' || 'facture'
         loading: false,
-        invoice_paths: {},
+        paths: {},
         options: JSON.parse(JSON.stringify(this.default_fact_options))
       }
       this.cloture = {
@@ -451,7 +528,7 @@ export default {
 
     getJSON('/invoices/tbd').then(invoices => {
       if (invoices.error) {
-        this.error_msg = "Une erreur est survenue en voulant récupérer les factures : " + invoices.code + ' - ' + invoices.description;
+        this.error_msg = "Une erreur est survenue en voulant récupérer les factures : " + invoices.code + ' - ' + invoices.description + ". Vérifier la connexion à la base de données IREC 10.70.20.10";
         console.log("ERROR while retrieveing invocies from DB : ", invoices)
         return
       }

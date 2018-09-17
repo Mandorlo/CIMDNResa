@@ -45,6 +45,13 @@ router.get('/admin', sessionChecker, (req, res, next) => {
   res.renderVue('pages/admin');
 });
 
+router.get('/liens', (req, res, next) => {
+  let data = {
+    loggedin: Boolean(req.session && req.cookies && req.session.user && req.cookies.user_sid)
+  };
+  res.renderVue('pages/liensUtiles', data);
+});
+
 // crée des routes automatiques pour la function fn
 function addRoute(fn, opt) {
   let url = `/RFC/${fn.name}`
