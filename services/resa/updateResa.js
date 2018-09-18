@@ -116,8 +116,9 @@ async function closeResaCore(numresa, opt) {
 }
 
 async function updateResa(numresa, fields, opt) {
-  // si on ne veut changer le pax_fact ou le prix_unit que pour une certaine prestation utiliser cette option :
+  // si on ne veut changer le pax_fact (ou le prix_unit?) que pour une certaine prestation utiliser cette option :
   // opt.filter_presta = 'BIL100' ==> ajoute un champs dans la requête RPH : WHERE Rp_codeprest = 'BIL100'
+  // ET opt.filter_presta_unitprice = 35 ==> ajoute AND Rp_prixmonnaie1 = 35
   if (!opt) opt = {}
   let types = {
     'label': 'string',
@@ -170,7 +171,11 @@ async function updateResa(numresa, fields, opt) {
 
     if (values.length) {
       let ifnumhisto = (table.fields.numhisto) ? `AND ${table.fields.numhisto} = 0` : '';
-      let iffilterprest = (opt.filter_presta && table.id == 'RPH') ? `AND ${table.fields.codeprest} = '${opt.filter_presta}'` : '';
+      let iffilterprest = ''
+      if (opt.filter_presta && opt.filter_presta_unitprice && table.id == 'RPH') {
+        iffilterprest = `AND ${table.fields.codeprest} = '${opt.filter_presta}'
+                        AND ${table.fields.prix_unit} = ${opt.filter_presta_unitprice}`
+      }
       let query = `UPDATE ${table.name} SET ${values.join(', ')} WHERE ${table.fields.numresa} = '${numresa}' ${ifnumhisto} ${iffilterprest}`
       if (fields.simulation) console.log(query);
       else {

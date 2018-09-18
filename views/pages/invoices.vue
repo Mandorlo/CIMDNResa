@@ -59,7 +59,15 @@
                   </tr>
                   <tr v-for="inv in dossier.invoice" :key="inv.label+inv.price_per_pax+inv.pax">
                     <td class="label">{{inv.label}}</td>
-                    <td>{{inv.pax}}</td>
+                    <td>
+                      <div class="flexRow">
+                        <input class="input_pax_fact" :name="inv.id" v-model="resa.pax_fact[inv.id]" v-on:keyup.enter="resaChangePaxPrestaFact(resa.pax_fact[inv.id], inv.code, inv.price_per_pax)">
+                        <div class="btn_change_label" v-show="resa.pax_fact[inv.id] != inv.pax">
+                          <i v-if="!resa.loading.pax_fact[inv.id]" @click="resaChangePaxPrestaFact(resa.pax_fact[inv.id], inv.code, inv.price_per_pax)" class="fa fa-arrow-right"></i>
+                          <i v-if="resa.loading.pax_fact[inv.id]" class="fa fa-spinner fa-pulse"></i>
+                        </div>
+                      </div>
+                    </td>
                     <td>{{inv.price_per_pax}} &#8362;</td>
                     <td>{{inv.price}} &#8362;</td>
                   </tr>
@@ -200,6 +208,19 @@
 </template>
 
 <style>
+.input_pax_fact {
+  height: auto;
+  width: 3rem;
+  padding-left: 3px;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  text-align: right;
+  color: var(--primary-color);
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .btn_change_label {
   cursor: pointer;
 }
@@ -353,8 +374,10 @@ export default {
 
     let default_resa = {
       label: '',
+      pax_fact: {},
       loading: {
-        label: false
+        label: false,
+        pax_fact: {}
       }
     }
 
@@ -404,7 +427,16 @@ export default {
   methods: {
     showModalInvoice(dossier) {
         this.dossier = dossier;
+        
+        // on initialise les champs de la resa qui pourront être modifiés
         this.resa.label = dossier.label;
+        this.resa.pax_fact = {}
+        this.resa.loading.pax_fact = {}
+        for (let presta of dossier.invoice) {
+          this.resa.pax_fact[presta.id] = presta.pax;
+          this.resa.loading.pax_fact[presta.id] = false
+        }
+
         console.log(this.dossier)
         this.$refs.modalFact.show()
     },
@@ -423,17 +455,31 @@ export default {
       }
       this.updateField(fields, 'label', 'nom du groupe')
     },
-    updateField: function(fields, field_name, field_label) {
-      this.resa.loading[field_name] = true;
-      remoteCall('updateResa', [this.dossier.id, fields, {}]).then(r => { // le dernier field {} pourra être utilisé pour filtrer uniqmt certaines prestas du devis
+    resaChangePaxPrestaFact(new_pax, presta_code, presta_unitprice) {
+      // this changes the pax for a particular presta in invoice tab
+      let fields = {
+        pax_fact: new_pax
+      }
+      let opt = {
+        filter_presta: presta_code,
+        filter_presta_unitprice: presta_unitprice
+      }
+      this.updateField(fields, 'pax_fact', 'Nombre de pax', opt)
+    },
+    updateField: function(fields, field_name, field_label, opt = {}, spinner_id = '') {
+      let loading_obj = this.resa.loading[field_name];
+      if (spinner_id != '') loading_obj = loading_obj[spinner_id];
+
+      loading_obj = true
+      remoteCall('updateResa', [this.dossier.id, fields, opt]).then(r => { // le dernier field {} pourra être utilisé pour filtrer uniqmt certaines prestas du devis
         console.log(r)
         this.showToast(`Le ${field_label} a été changé, merci Seigneur pour ta bonté !`)
-        this.resa.loading[field_name] = false;
+        loading_obj = false;
         location.reload()
       }).catch(e => {
         console.log(`ERROR update ${field_name}`, e)
         this.showToast(`Il y a une erreur lors de la mise à jour de ${field_label} :( Seigneur prends pitié de nous`)
-        this.resa.loading[field_name] = false;
+        loading_obj = false;
       })
     },
     // =============================================================

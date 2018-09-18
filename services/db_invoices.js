@@ -95,7 +95,8 @@ let model = {
     "label": "Rp_libprest",
     "price_per_pax": "Rp_prixmonnaie1", // type = int
     "discount": "Rp_mttremise", // type = int
-    "price": "Rp_montant" // type = int
+    "price": "Rp_montant", // type = int
+    "id": (el) => el['Rp_codeprest'] + '-' + el['Rp_price_per_pax']
   },
   "activities": {
     "_query": `SELECT Res_codeespace, Res_date, Res_heure, Res_nbpers, Res_codetheme, Res_besinterne
