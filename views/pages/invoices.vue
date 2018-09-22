@@ -39,6 +39,8 @@
         <template slot="step1">
           <h3 class="titre_step">Vérifier les infos du dossier</h3>
           <div class="content_step">
+            <div class="info" v-if="dossier.agency && dossier.agency.special_info && /\@STEP1\s/.test(dossier.agency.special_info)">{{dossier.agency.special_info}}</div>
+
             <div class="act_fact">
               <div class="activities">
                 <div class="title_underline">Activités</div>
@@ -60,13 +62,7 @@
                   <tr v-for="inv in dossier.invoice" :key="inv.label+inv.price_per_pax+inv.pax">
                     <td class="label">{{inv.label}}</td>
                     <td>
-                      <div class="flexRow">
-                        <input class="input_pax_fact" :name="inv.id" v-model="resa.pax_fact[inv.id]" v-on:keyup.enter="resaChangePaxPrestaFact(resa.pax_fact[inv.id], inv.code, inv.price_per_pax)">
-                        <div class="btn_change_label" v-show="resa.pax_fact[inv.id] != inv.pax">
-                          <i v-if="!resa.loading.pax_fact[inv.id]" @click="resaChangePaxPrestaFact(resa.pax_fact[inv.id], inv.code, inv.price_per_pax)" class="fa fa-arrow-right"></i>
-                          <i v-if="resa.loading.pax_fact[inv.id]" class="fa fa-spinner fa-pulse"></i>
-                        </div>
-                      </div>
+                      <input class="input_pax_fact" :name="inv.id" v-model="resa.pax_fact[inv.id]" v-on:keyup.enter="resaChangePaxPrestaFact(resa.pax_fact[inv.id], inv.code, inv.price_per_pax)">
                     </td>
                     <td>{{inv.price_per_pax}} &#8362;</td>
                     <td>{{inv.price}} &#8362;</td>
@@ -316,6 +312,7 @@
 .act_fact {
   display: flex;
   justify-content: space-around;
+  margin-top: 1rem;
 }
 .title_underline {
   border-bottom: 1px solid var(--primary-color);

@@ -1,0 +1,86 @@
+[
+    {
+        "title": "Documents utiles",
+        "liens": [
+            {
+                "label": "Présentation du centre (pour agences)",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\MARKETING\\@Envoi\\2017 Presentation EN.pdf",
+                    "\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\MARKETING\\@Envoi\\2017 Presentation FR.pdf"
+                ]
+            },
+            {
+                "label": "Prix des prestations (pour agences)",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\MARKETING\\@Envoi\\2017 Group Prices EN.pdf",
+                    "\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\MARKETING\\@Envoi\\2017 Group Prices FR.pdf"
+                ]
+            },
+            {
+                "label": "Dossier des citations bibliques du show",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Courant\\PARCOURS + PRODUITS MDN\\Contenu Masters et Textes\\Citations"
+                ]
+            },
+            {
+                "label": "Modèle Word et Open Office pour les confirmations de réservation",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Public\\IREC\\GTS_V5\\Documents_Type\\Contrats CIMDN\\CONFIRMATION DE RESERVATION.doc",
+                    "\\\\10.70.10.221\\Com-Public\\IREC\\GTS_V5\\Documents_Type\\Contrats CIMDN\\Confirmation de reservation CIMDN Open office2.odt"
+                ]
+            },
+            {
+                "label": "Modèle Word pour les factures",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Public\\IREC\\GTS_V5\\Documents_Type\\Contrats CIMDN\\FACTURE Réservation word.doc"
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Modèles de flyers, affiches, reçus, charte graphique...",
+        "liens": [
+            {
+                "label": "Modèle de reçus CIMDN",
+                "path": ["TODO"]
+            },
+            {
+                "label": "PPT pour informer de la fermeture temporaire du centre",
+                "path": ["\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\MARKETING\\@Envoi\\Mail fermeture CIMDN été 2018.pptx"]
+            },
+            {
+                "label": "Liste des mails des contacts du Centre classés par catégorie",
+                "path": ["\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\MARKETING\\@Envoi\\CIMDN - mailing - fermeture du centre.xlsx"]
+            },
+            {
+                "label": "Logos et images du CIMDN et de la CCN",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\DOCUMENTS TYPES\\Identité visuelle",
+                    "\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\DOCUMENTS TYPES\\logo ou images"
+                ]
+            },
+            {
+                "label": "Modèles de signatures email",
+                "path": ["\\\\10.70.10.221\\Com-Courant\\COMMUNICATION\\DOCUMENTS TYPES\\Signature Email 2017"]
+            }
+        ]
+    },
+    {
+        "title": "Documentation du show multimédia",
+        "liens": [
+            {
+                "label": "Procédure d'ouverture / fermeture du show",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Technique\\Show\\Consignes Multimédia.pptx"
+                ]
+            },
+            {
+                "label": "Résolution de problèmes courants",
+                "path": [
+                    "\\\\10.70.10.221\\Com-Technique\\Show\\CIMDN Problèmes show.pptx",
+                    "\\\\10.70.10.221\\Com-Technique\\Show\\Consignes Multimédia + résolution problèmes.pptx"
+                ]
+            }
+        ]
+    }
+]

@@ -4,7 +4,9 @@ const resa = require('../services/resa/resa.js')
 const updateResa = require('../services/resa/updateResa.js')
 const emitResa = require('../services/resa/emit_confirmation.js')
 const guides = require('../services/stats/guides.js')
-let sessionChecker = require('../services/auth/auth.js').sessionChecker;
+const PARAM = require('../services/param/param.js')
+const auth = require('../services/auth/auth.js')
+let sessionChecker = auth.sessionChecker;
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -47,7 +49,8 @@ router.get('/admin', sessionChecker, (req, res, next) => {
 
 router.get('/liens', (req, res, next) => {
   let data = {
-    loggedin: Boolean(req.session && req.cookies && req.session.user && req.cookies.user_sid)
+    loggedin: Boolean(req.session && req.cookies && req.session.user && req.cookies.user_sid),
+    liens_utiles: PARAM.liens_utiles
   };
   res.renderVue('pages/liensUtiles', data);
 });
@@ -55,7 +58,10 @@ router.get('/liens', (req, res, next) => {
 // crée des routes automatiques pour la function fn
 function addRoute(fn, opt) {
   let url = `/RFC/${fn.name}`
-  for (let i = 0; i < fn.length; i++) {
+  let fn_length = fn.length;
+  if (opt && opt.length) fn_length = opt.length;
+
+  for (let i = 0; i < fn_length; i++) {
     url += `/:arg${i}`
   }
   console.log('Adding auto-route ' + url)
@@ -69,7 +75,7 @@ function addRoute(fn, opt) {
       args.push(v)
       i++
     }
-    console.log(args, fn.name, fn.length)
+    console.log(args, fn.name, fn_length)
 
     fn(...args).then(resultat => {
       if (typeof resultat == 'number') resultat = resultat.toString();
@@ -87,8 +93,14 @@ function forceType(v, typ) {
   if (typ == 'string') return v;
   if (typ == 'number') return parseFloat(v);
   if (typ == 'object') return JSON.parse(v);
+  if (typ == 'boolean') return v.toLowerCase() == 'true';
   return v
 }
+
+addRoute(PARAM.setSignup)
+addRoute(PARAM.setSignup, ['boolean'])
+addRoute(PARAM.setEnableAuth)
+addRoute(PARAM.setEnableAuth, ['boolean'])
 
 addRoute(resa.getFutureResas, [])
 
@@ -100,5 +112,9 @@ addRoute(guides.get, ['string'])
 addRoute(guides.updateDB)
 
 addRoute(emitResa.genConfirmation, ['string', 'object'])
+
+addRoute(auth.getAllUsers)
+addRoute(auth.createUser, ['object'])
+addRoute(auth.deleteUser, ['string'])
 
 module.exports = router;

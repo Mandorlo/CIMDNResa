@@ -23,6 +23,11 @@ body {
   color: var(--primary-color);
 }
 
+.container {
+  width: 60vw;
+  margin-left: 20vw;
+}
+
 input {
   height: 24px;
   width: 170px;
@@ -30,6 +35,11 @@ input {
   border-radius: 4px;
   box-shadow: none;
   border: 1px solid var(--gray-light-color);
+}
+
+input[type="checkbox"] {
+  height: 16px;
+  width: 16px;
 }
 
 select {
@@ -144,4 +154,9 @@ select {
 
 .flexRow {
   display: flex
+}
+
+.flexEnd {
+  justify-self: flex-end;
+  margin-left: auto;
 }

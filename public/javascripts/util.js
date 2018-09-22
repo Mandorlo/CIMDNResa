@@ -125,3 +125,12 @@ function range(nb_el, el_val = null) {
   }
   return res
 }
+
+function obj2arr(o, add_key = '') {
+  let arr = []
+  for (let attr in o) {
+    if (add_key != '') o[attr][add_key] = attr;
+    arr.push(o[attr])
+  }
+  return arr
+}

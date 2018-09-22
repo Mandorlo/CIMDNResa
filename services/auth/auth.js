@@ -43,6 +43,7 @@ async function createUser(data) {
             email: data.email, 
             hash: bcrypt.hashSync(data.password),
         }
+        if (data.roles) db[data.email].roles = data.roles;
         fs.writeFileSync(path.join(__dirname, 'auth.json'), JSON.stringify(db, null, '\t'), 'utf8')
         db[data.email].sessionId = uuid() + data.email
         return db[data.email]
@@ -51,6 +52,12 @@ async function createUser(data) {
         db[data.email].sessionId = uuid() + data.email
         return db[data.email]
     }
+}
+
+async function deleteUser(email) {
+    console.log("INFO deleteUser(" + email + ")")
+    delete db[email]
+    fs.writeFileSync(path.join(__dirname, 'auth.json'), JSON.stringify(db, null, '\t'), 'utf8')
 }
 
 async function findUser(email, password) {
@@ -65,8 +72,14 @@ async function findUser(email, password) {
     return null
 }
 
+async function getAllUsers() {
+    return db
+}
+
 module.exports = {
     sessionChecker,
     createUser,
-    findUser
+    findUser,
+    deleteUser,
+    getAllUsers
 }

@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <img class="Marie" src="/images/Marie.png" @click="$refs.toast.show()">
+  <img class="Marie" src="/images/Marie.png">
   <snackbar ref="toast"></snackbar>
 </div>
 </template>
