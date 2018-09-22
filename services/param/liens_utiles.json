@@ -42,7 +42,9 @@
         "liens": [
             {
                 "label": "Modèle de reçus CIMDN",
-                "path": ["TODO"]
+                "path": [
+                    "\\\\10.70.10.221\\Com-Courant\\ACCUEIL\\@Recu.pdf"
+                ]
             },
             {
                 "label": "PPT pour informer de la fermeture temporaire du centre",
