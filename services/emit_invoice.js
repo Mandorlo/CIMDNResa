@@ -376,7 +376,7 @@ function nextFactNum(mydir_list, annee = null) {
   // on ajoute l'année à la suite des chemins vers les dossiers et on reteste si les dossiers existent bien
   mydir_list = _.map(mydir_list, mydir => path.join(mydir, annee));
   allareDirs = _.reduce(_.map(mydir_list, mydir => files.isDir(mydir)), (sum, b) => sum && b);
-  if (!allareDirs) return Promise.reject("'" + mydir_list.join(", ") + "' contains paths that are not a directory ! (in nextFactNum)");
+  if (!allareDirs) return Promise.reject("'" + mydir_list.join(", ") + "' contains paths that are not a directory! (in nextFactNum)");
   // si l'année en input est incohérente on renvoie une erreur également
   var delta = parseInt(moment().format('YYYY')) - parseInt(annee);
   if (delta > 1 || delta < 0) return Promise.reject("Impossible d'émettre une facture pour l'année " + annee + ". Voir fonction nextFactNum dans services/emit_invoice.js");

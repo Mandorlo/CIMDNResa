@@ -10,7 +10,7 @@
       <td v-for="attr in ['pax', 'resa', 'ca']" v-bind:key="attr"><b>{{labels[attr]}}</b></td>
     </tr>
     <tr>
-      <td class="line_title">Valeur brute</td>
+      <td class="line_title">Valeur brute {{thisyear}}</td>
       <td v-for="attr in ['pax', 'resa', 'ca']" v-bind:key="attr">{{yearStatus[attr].curryear|number}} <span v-if="attr=='ca'">&#8362;</span></td>
     </tr>
     <tr>

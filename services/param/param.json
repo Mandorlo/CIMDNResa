@@ -16,13 +16,13 @@
 	},
 	"invoice": {
 		"prestas_refacturables": [
-			"CAFGPE",
-			"CAF3CPENFG",
-			"CAFPACK3",
-			"CAF3CPADUG",
-			"CAFPACK2",
-			"CAF3CHDGP",
-			"CAFPACK1"
+			"__CnonAFGPE",
+			"__CnonAF3CPENFG",
+			"__CnonAFPACK3",
+			"__CnonAF3CPADUG",
+			"__CnonAFPACK2",
+			"__CnonAF3CHDGP",
+			"__CnonAFPACK1"
 		],
 		"refac_prices": {
 			"CAFPACK1": 20,

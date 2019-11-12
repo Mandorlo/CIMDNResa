@@ -38,19 +38,6 @@
       font-style: italic;
       color: #555555;
     }
-	
-	.style_warning {
-      font-weight: 900;
-      color: #FF0000;
-	  font-size: 1.5em;
-    }
-	
-	.style_warning_en {
-      font-weight: 900;
-      color: #FF0000;
-	  font-style: italic;
-	  font-size: 1.5em;
-    }
 
     img.logo {
       position: absolute;
@@ -235,12 +222,8 @@
   <% } else { %>
     <div class="info_bottom1">
       <b><% bank_account %> Paiement à réception de la facture par Cash/Chèque/Virement bancaire.</b><br><span class="style_en">Payment upon receipt of invoice by Cash/Check/Wire transfer.</span>
-      <br><span class="style_en">Bank:</span> <b>Mercantile 17 ●</b> <span class="style_en">Account:</span> <b> Chemin Neuf CIMDN ●</b> <span class="style_en">Branch:</span> <b> Nazareth 639 ●</b> <span class="style_en">Compte:</span> <b> 8122 689 BARDILIT ● IBAN : IL63
-      0176 3900 0000 8122 689</b>
-	  <br><span class="style_warning">⚠️ Veuillez prendre en compte le changement de compte et d'IBAN ⚠️
-	  </span>
-	  <br><span class="style_warning_en">⚠️ Please take into account the change of account and IBAN ⚠️
-	  </span>
+      <br><span class="style_en">Bank:</span> <b>Mercantile 17 ●</b> <span class="style_en">Account:</span> <b> Chemin Neuf FratNaz ●</b> <span class="style_en">Branch:</span> <b> Nazareth 639 ●</b> <span class="style_en">Compte:</span> <b> 61119190 BARDILIT ● IBAN : IL27
+      0176 3900 0006 1119 190</b>
     </div>
   <% } %>
 
