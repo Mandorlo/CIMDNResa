@@ -11,7 +11,7 @@
 		}
 	},
 	"network": {
-		"default_frat_dir": "Z:\\Factures émises\\Frat\\",
+		"default_frat_dir": "Z:\\Factures émises\\CIMDN\\",
 		"default_cimdn_dir": "Z:\\Factures émises\\CIMDN\\"
 	},
 	"invoice": {
