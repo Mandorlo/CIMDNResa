@@ -375,6 +375,8 @@ function nextFactNum(mydir_list, annee = null) {
   if (!allareDirs) return Promise.reject("'" + mydir_list.join(", ") + "' contains paths that are not a directory ! (in nextFactNum)");
   // on ajoute l'année à la suite des chemins vers les dossiers et on reteste si les dossiers existent bien
   mydir_list = _.map(mydir_list, mydir => path.join(mydir, annee));
+  // on crée le dossier de l'année s'il n'existe pas déjà
+  _.map(mydir_list, mydir => (files.isDir(mydir)) ? mydir : fs.mkdirSync(mydir, 0744));
   allareDirs = _.reduce(_.map(mydir_list, mydir => files.isDir(mydir)), (sum, b) => sum && b);
   if (!allareDirs) return Promise.reject("'" + mydir_list.join(", ") + "' contains paths that are not a directory! (in nextFactNum)");
   // si l'année en input est incohérente on renvoie une erreur également
@@ -403,7 +405,7 @@ function nextFactNum(mydir_list, annee = null) {
 
         if (maxi_fact_num <= 0) {
           // si on est dans le dossier frat, c'est spécial, il y a l'année qui rentre en considération
-          if (mydir == default_frat_dir) resolve("F " + annee.substr(2) + "001");
+          if (mydir.indexOf(default_frat_dir) >= 0) resolve("F " + annee.substr(2) + "001");
           // sinon on met simplement 0001
           else resolve("F 0001");
         } else {

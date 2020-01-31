@@ -11,8 +11,10 @@
 		}
 	},
 	"network": {
-		"default_frat_dir": "Z:\\Factures émises\\Frat\\",
-		"default_cimdn_dir": "Z:\\Factures émises\\CIMDN\\"
+		"default_frat_dir_old": "Z:\\Factures émises\\Frat\\",
+		"default_frat_dir": "C:\\Users\\carlo\\Desktop\\cimdn_frat",
+		"default_cimdn_dir": "C:\\Users\\carlo\\Desktop\\cimdn_frat",
+		"default_cimdn_dir_old": "Z:\\Factures émises\\CIMDN\\"
 	},
 	"invoice": {
 		"prestas_refacturables": [
